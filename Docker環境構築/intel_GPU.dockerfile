@@ -87,7 +87,7 @@ RUN pip install --upgrade intel-extension-for-tensorflow-weekly[xpu] -f https://
 
 RUN pip install wget tqdm gensim flask
 
-RUN pip install git+https://github.com/Pithikos/python-websocket-server
+RUN pip install websockets
 
 RUN pip install scipy==1.10.1
 

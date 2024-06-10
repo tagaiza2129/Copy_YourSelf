@@ -46,7 +46,7 @@ ARG TF_VER="2.15"
 RUN pip --no-cache-dir install tensorflow==${TF_VER}
 
 RUN pip install wget tqdm gensim flask
-RUN pip install git+https://github.com/Pithikos/python-websocket-server
+RUN pip install websockets
 RUN pip install scipy==1.10.1
 
 RUN sudo apt update \

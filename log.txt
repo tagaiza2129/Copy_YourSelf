@@ -3,3 +3,10 @@
 2024-06-03 13:55:18,006 __main__:72 <module> [INFO]: 形態素解析中...
 2024-06-03 13:55:18,024 __main__:74 <module> [INFO]: ベクトル化処理中...
 2024-06-04 14:58:22,211 __main__:26 server [INFO]: Received data: Hello world!
+2024-06-10 13:30:07,707 __main__:43 main [INFO]: WebSocketサーバーを起動しました 0.0.0.0:2459
+2024-06-10 13:45:10,206 __main__:30 server [INFO]: Connected from IP:('127.0.0.1', 55428) Name:Main_PC_For_tagaiza
+2024-06-10 13:45:10,206 __main__:37 server [INFO]: Received data: connect Main_PC_For_tagaiza CPU GPU 8GB
+2024-06-10 13:48:46,761 __main__:30 server [INFO]: Connected from IP:('127.0.0.1', 41328) Name:Main_PC_For_tagaiza
+2024-06-10 13:48:46,779 __main__:37 server [INFO]: Received data: connect Main_PC_For_tagaiza CPU GPU 8GB
+2024-06-10 14:12:30,445 __main__:37 server [INFO]: Received data: WB_test_connect.py
+2024-06-10 14:12:46,978 __main__:37 server [INFO]: Received data: WB_test_connect.py 1 1 1

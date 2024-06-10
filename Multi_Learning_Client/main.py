@@ -1,6 +1,6 @@
 import asyncio
 import websockets
-
+connect_info={}
 async def connect_to_websocket_server():
     async with websockets.connect('ws://localhost:2459') as websocket:
         # Perform actions with the WebSocket connection
@@ -8,7 +8,18 @@ async def connect_to_websocket_server():
         while True:  # Keep the connection open
             try:
                 response = await websocket.recv()
-                print(f'Received message from server: {response}')
+                response_order=response.split()
+                match response_order[0]:
+                    case "Connected":
+                        connect_info["id"]=response_order[1]
+                    case "Connected_list":
+                        print(response_order[1])
+                    case "Disconnect":
+                        if response_order[1]==connect_info["id"]:
+                            print("サーバーから切断されました")
+                            break
+                    case "Unknown":
+                        print("Unknown Command")
             except websockets.exceptions.ConnectionClosed:
                 print("Connection with server closed")
                 break

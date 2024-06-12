@@ -24,7 +24,7 @@ from pathlib import Path
 from logging import getLogger, config
 import json
 import subprocess
-import gdown
+import tools
 # ログの設定
 with open('設定ファイル/log_config.json', 'r') as f:
     log_conf = json.load(f)
@@ -34,8 +34,7 @@ os.chdir(os.path.dirname(__file__))
 #Word2Vecのモデルが存在しない場合はダウンロードを行う
 if os.path.isfile(os.path.join(os.path.dirname(__file__),"Preprocessing","word2vec.model")) ==False:
     logger.info("学習データのダウンロードを開始します...")
-    gdown.download(id="1MrVoTEgg7lZUXomSMD9Zynl1nSX9K5yZ",output="Preprocessing/model.zip",quiet=False)
-    subprocess.run("unzip Preprocessing/model.zip",shell=True)
+    tools.Drive_Download("Word2Vec","Preprocessing")
     logger.info("学習データのダウンロードが完了しました。")
 #分散学習のためのサーバーを起動
 if multi_processing==True:

@@ -7,14 +7,16 @@ parser.add_argument("processing_data",type=str,help="学習に利用するデー
 parser.add_argument('-d', '--device',type=str,help='学習に利用するデバイスを指定します。\n使用想定デバイス\nCPU:まあ...そのままの意味\nGPU:NVIDIA製のGPUを利用し学習します\nXPU:intel製のGPUを利用し学習します',default="CPU")
 parser.add_argument("-p","--port",type=int,help="分散学習に利用するサーバーのポートを指定します",default=2459)
 parser.add_argument("-e","--epoch",type=int,help="何回繰り返し学習させるかを指定します。",default=10)
-parser.add_argument("-m","--multi_processing",type=bool,help="分散学習を行うかどうかを指定します。",default=False)
+parser.add_argument("-s","--server_multi_processing",type=bool,help="分散学習を行うかどうかを指定します。",default=False)
+parser.add_argument("-m","--mode",type=str,help="学習から推論までのモードを指定します。\n学習:学習を行います。\n推論:推論を行います。",default="学習")
 args = parser.parse_args()
 #指定された引数を受け取る、又、デフォルト値を設定しているため、引数が指定されなかった場合はデフォルト値が適用されるものとする
 Processing_data=args.processing_data
 device=args.device
 port=args.port
 epoch=args.epoch
-multi_processing=args.multi_processing
+multi_processing=args.server_multi_processing
+mode=args.mode
 import os
 import time
 import Preprocessing.analysis as analysis
@@ -22,12 +24,19 @@ from pathlib import Path
 from logging import getLogger, config
 import json
 import subprocess
+import gdown
 # ログの設定
-with open('log_config.json', 'r') as f:
+with open('設定ファイル/log_config.json', 'r') as f:
     log_conf = json.load(f)
 config.dictConfig(log_conf)
 logger = getLogger(__name__)
 os.chdir(os.path.dirname(__file__))
+#Word2Vecのモデルが存在しない場合はダウンロードを行う
+if os.path.isfile(os.path.join(os.path.dirname(__file__),"Preprocessing","word2vec.model")) ==False:
+    logger.info("学習データのダウンロードを開始します...")
+    gdown.download(id="1MrVoTEgg7lZUXomSMD9Zynl1nSX9K5yZ",output="Preprocessing/model.zip",quiet=False)
+    subprocess.run("unzip Preprocessing/model.zip",shell=True)
+    logger.info("学習データのダウンロードが完了しました。")
 #分散学習のためのサーバーを起動
 if multi_processing==True:
     subprocess.Popen("python3 server.py",shell=True)

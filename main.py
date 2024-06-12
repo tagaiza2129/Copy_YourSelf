@@ -46,15 +46,15 @@ os.environ["MECABRC"]="/etc/mecabrc"
 if Path(Processing_data).is_absolute()==True:
     pass
 else:
-    processing_directory=os.path.join(os.path.dirname(__file__),Processing_data)
+    Processing_data=os.path.join(os.path.dirname(__file__),Processing_data)
 logger.info("ファイルの前準備を開始します...")
 #上のログの通り、学習ファイルの前準備を行う、具体的には集めたデータのいらないデータを消去して対象ユーザー(金子拓夢)以外のテキストデータを削除している
 #受け答えを学習させるために後々編集する予定...
-os.chdir(processing_directory)
-file_list=os.listdir(processing_directory)
+os.chdir(Processing_data)
+file_list=os.listdir(Processing_data)
 Processing_data=[]
 for file in file_list:
-    os.chdir(processing_directory)
+    os.chdir(Processing_data)
     with open(file,mode="r",encoding="UTF-8")as f:
         text_data=f.read()
     datas=text_data.split("\n")

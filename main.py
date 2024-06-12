@@ -43,10 +43,7 @@ if multi_processing==True:
 os.environ["MECABRC"]="/etc/mecabrc"
 #送られてきた学習データが絶対パスか相対パスかを判定し、相対パスであれば絶対パスに変換している
 #ちなみに自動変換を使った結果わけがわからんところに飛ばされたから実行ファイルを参照して無理やり変換している
-if Path(Processing_data).is_absolute()==True:
-    pass
-else:
-    Processing_data=os.path.join(os.path.dirname(__file__),Processing_data)
+os.chdir(os.path.dirname(__file__))
 logger.info("ファイルの前準備を開始します...")
 #上のログの通り、学習ファイルの前準備を行う、具体的には集めたデータのいらないデータを消去して対象ユーザー(金子拓夢)以外のテキストデータを削除している
 #受け答えを学習させるために後々編集する予定...
@@ -54,7 +51,6 @@ os.chdir(Processing_data)
 file_list=os.listdir(Processing_data)
 Processing_data=[]
 for file in file_list:
-    os.chdir(Processing_data)
     with open(file,mode="r",encoding="UTF-8")as f:
         text_data=f.read()
     datas=text_data.split("\n")

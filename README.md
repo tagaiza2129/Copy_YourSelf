@@ -71,8 +71,8 @@ $ cd mecab-ipadic-neologd && ./bin/install-mecab-ipadic-neologd -n -y
 機械学習に用いられるPythonモジュールをインストールします。 \
 対応GPUはNVIDIAとINTEL GPUの二つでこれらのGPUを使うにはCudaやOneAPI等の別のソフトが必要になるため \
 インストール方法については以下のサイトをご覧ください。 \
-(NVIDIA)[NVIDIAの記事] \
-(INTEL)[https://github.com/intel/intel-extension-for-tensorflow]
+[NVIDIA_GPU](https://www.tensorflow.org/install/pip?hl=ja) \
+[INTEL_GPU](https://github.com/intel/intel-extension-for-tensorflow)
 ```sh 
 $ pip install tensorflow==2.15 
 ```
@@ -84,10 +84,26 @@ $ pip install wget tqdm gensim flask websockets google-api-python-client google-
 楽しい生成AIライフを！
 ### Dockerによるインストール方法
 コンテナアプリケーションであるDockerを使うことでもインストールは可能です。\
-おそらくこっちの方が簡単で早いです
+おそらくこっちの方が簡単で早いです \
+レポジトリのディレクトリに移動し以下のコマンドを利用しDockerイメージを作成します
 ```sh
- $ pip install tensorflow
+$ bash Docker環境構築\build.sh 使用機器(GPU、CPU等)
 ```
+先ほど作ったイメージからコンテナを起動します。
+```sh
+$ bash Docker環境構築\run.sh 使用機器(GPU、CPU等)
+```
+Dockerコンテナ内で本プロジェクトをダウンロードします
+```sh
+$ git clone https://github.com/IT-F-09/Copy_YourSelf.git
+```
+以上でDockerでのインストールが完了しました！ \
+Dockerの詳しい使い方は[こちら](https://docs.docker.jp/)を御覧ください
 ## 制作者情報
 tagaiza2129
-## 使用技術等
+## 使用技術,言語等
+<img src="https://img.shields.io/badge/-Python-555.svg?logo=python&style=flat">
+<img src="https://img.shields.io/badge/-Github-555.svg?logo=Github&style=flat">
+<img src="https://img.shields.io/badge/-Docker-555.svg?logo=Docker&style=flat">
+<img src="https://img.shields.io/badge/-tensorflow-555.svg?logo=tensorflow&style=flat">
+<img src="https://img.shields.io/badge/-websockets-555.svg?logo=tensorflow&style=flat">

@@ -3,7 +3,7 @@ import argparse
 #何で全てインポートした上でパラメーターの設定をしないのかって？TensorFlowのロードが始まると大量のログが流れて
 #大変不格好だからだよ？
 parser = argparse.ArgumentParser(prog="Copy_YourSelf",description='TensorFlow等を活用し、人格形成を学習させたChatBotを作成したいです...',usage="python3 main.py <file_Path> <options>",add_help=True)
-parser.add_argument("processing_data",type=str,help="学習に利用するデータを指定します。")
+parser.add_argument("--processing_data",type=str,help="学習、又は推論に利用するデータを指定します。")
 parser.add_argument('-d', '--device',type=str,help='学習に利用するデバイスを指定します。\n使用想定デバイス\nCPU:まあ...そのままの意味\nGPU:NVIDIA製のGPUを利用し学習します\nXPU:intel製のGPUを利用し学習します',default="CPU")
 parser.add_argument("-p","--port",type=int,help="分散学習に利用するサーバーのポートを指定します",default=2459)
 parser.add_argument("-e","--epoch",type=int,help="何回繰り返し学習させるかを指定します。",default=10)
@@ -53,25 +53,7 @@ Processing_data=[]
 for file in file_list:
     with open(file,mode="r",encoding="UTF-8")as f:
         text_data=f.read()
-    datas=text_data.split("\n")
-    Analysis_mode=datas[0]
-    for data in datas:
-        text_data_list=data.split()
-        if Analysis_mode=="LINE":
-            if "[スタンプ]" in text_data_list or "[通話]" in text_data_list or "[画像]" in text_data_list or "http" in text_data_list or text_data_list[0]=="LINE":
-                pass
-            elif text_data_list[1]=="拓夢" or text_data_list[1]=="ターガイザー":
-                Processing_data.append(text_data_list[2])
-        elif Analysis_mode=="Discord":
-            if len(text_data_list)<=1:
-                pass
-            elif "http" in text_data_list[1] or text_data_list==[] or "<@" in text_data_list[1] or "<#" in text_data_list[1] or "@here" in text_data_list[1] or "@everyone" in text_data_list[1] or "m!" in text_data_list[1]:
-                pass
-            elif text_data_list[0]=="tagaiza2129":
-                try:
-                    Processing_data.append(text_data_list[1])
-                except IndexError:
-                    pass
+    Processing_data=text_data.split("\n")
 time.sleep(0.5)
 logger.info("形態素解析中...")
 Morphological_data=analysis.Morphological_analysis(Processing_data)

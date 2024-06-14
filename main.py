@@ -3,7 +3,7 @@ import argparse
 #何で全てインポートした上でパラメーターの設定をしないのかって？TensorFlowのロードが始まると大量のログが流れて
 #大変不格好だからだよ？
 parser = argparse.ArgumentParser(prog="Copy_YourSelf",description='TensorFlow等を活用し、人格形成を学習させたChatBotを作成したいです...',usage="python3 main.py <file_Path> <options>",add_help=True)
-parser.add_argument("--processing_data",type=str,help="学習、又は推論に利用するデータを指定します。")
+parser.add_argument("processing_data",type=str,help="学習、又は推論に利用するデータを指定します。")
 parser.add_argument('-d', '--device',type=str,help='学習に利用するデバイスを指定します。\n使用想定デバイス\nCPU:まあ...そのままの意味\nGPU:NVIDIA製のGPUを利用し学習します\nXPU:intel製のGPUを利用し学習します',default="CPU")
 parser.add_argument("-p","--port",type=int,help="分散学習に利用するサーバーのポートを指定します",default=2459)
 parser.add_argument("-e","--epoch",type=int,help="何回繰り返し学習させるかを指定します。",default=10)

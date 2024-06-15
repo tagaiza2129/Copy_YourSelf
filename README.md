@@ -1,8 +1,5 @@
 # Copy_YourSelf
-<img src="https://img.shields.io/badge/Version-0.0.0-G">
-<img src="https://img.shields.io/badge/Python_3.9-support-green">
-<img src="https://img.shields.io/badge/Python_3.10-support-green">
-<img src="https://img.shields.io/badge/Python_3.11-support-green">
+<img src="https://img.shields.io/badge/Version-0.0.0-G"> <img src="https://img.shields.io/badge/Python_3.9-support-green"> <img src="https://img.shields.io/badge/Python_3.10-support-green"> <img src="https://img.shields.io/badge/Python_3.11-support-green">
 
 ## Copy_YourSelfとは
 
@@ -112,7 +109,4 @@ tagaiza2129
 ### Qiita
 [【GitHub】バッジを貼って README をおしゃれにする](https://qiita.com/narikkyo/items/98d7c4dbfccf52ec1840) 
 ## 使用技術,言語等
-<img src="https://img.shields.io/badge/-Python-555.svg?logo=python&style=flat">
-<img src="https://img.shields.io/badge/-Github-555.svg?logo=Github&style=flat">
-<img src="https://img.shields.io/badge/-Docker-555.svg?logo=Docker&style=flat">
-<img src="https://img.shields.io/badge/-tensorflow-555.svg?logo=tensorflow&style=flat">
+<img src="https://img.shields.io/badge/-Python-555.svg?logo=python&style=flat"> <img src="https://img.shields.io/badge/-Github-555.svg?logo=Github&style=flat"> <img src="https://img.shields.io/badge/-Docker-555.svg?logo=Docker&style=flat"> <img src="https://img.shields.io/badge/-tensorflow-555.svg?logo=tensorflow&style=flat">

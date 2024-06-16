@@ -7,8 +7,8 @@ from multiprocessing import Pool
 import os
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 os.environ["MECABRC"] = "/etc/mecabrc"
-os.chdir(r"/media/F/wikipedia")
-
+#ファイルを読み込んで、文ごとに分割してリスト化して返す
+#負荷でKilledされるので、chunk_sizeを小さくし対処
 def read_and_process(file_path, chunk_size=5120*5120):
     sentences_data=[]
     with open(file_path, "r", encoding='utf-8') as file:
@@ -27,9 +27,20 @@ def tokenize_generator(text_list):
     with Pool() as pool:
         results = list(tqdm(pool.imap(tokenize, text_list),total=len(text_list)))
     return results
+#ファイルをリスト化して返す
+#正直この程度だったら関数化するまでも無い気がする
+def file_setting(file_path):
+    os.chdir(file_path)
+    file_list=os.listdir(file_path)
+    return file_list
 
-print("Reading and processing file...")
-tokenized_sentences = tokenize_generator(read_and_process("wiki.txt"))
-print("Training model...")
-model = word2vec.Word2Vec(tokenized_sentences, vector_size=200, window=5, min_count=1, sample=1e-3, negative=5, hs=0, epochs=1000)
-model.save("word2vec.model")
+def Lerning(Processing_data:str,epoch:int):
+    print("Reading and processing file...")
+    file_list=file_setting(Processing_data)
+    sentences_datas=[]
+    for i in range(len(file_list)):
+        sentences_datas+=read_and_process(file_list[i])
+    tokenized_sentences = tokenize_generator(sentences_datas)
+    print("Training model...")
+    model = word2vec.Word2Vec(tokenized_sentences, vector_size=200, window=5, min_count=1, sample=1e-3, negative=5, hs=0, epochs=epoch)
+    model.save("word2vec.model")

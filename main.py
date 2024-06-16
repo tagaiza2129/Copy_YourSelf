@@ -9,6 +9,7 @@ parser.add_argument("-p","--port",type=int,help="分散学習に利用するサ�
 parser.add_argument("-e","--epoch",type=int,help="何回繰り返し学習させるかを指定します。",default=10)
 parser.add_argument("-s","--server_multi_processing",type=bool,help="分散学習を行うかどうかを指定します。",default=False)
 parser.add_argument("-m","--mode",type=str,help="学習から推論までのモードを指定します。\n学習:学習を行います。\n推論:推論を行います。",default="学習")
+parser.add_argument("-l","--Lerning_mode",type=str,choices=["Word2Vec","RNN"],help="学習モデルを指定します。\nWord2Vec:Word2Vecを学習します。\nRNN:RNNを学習します。",default="RNN")
 args = parser.parse_args()
 #指定された引数を受け取る、又、デフォルト値を設定しているため、引数が指定されなかった場合はデフォルト値が適用されるものとする
 Processing_data=args.processing_data
@@ -17,6 +18,7 @@ port=args.port
 epoch=args.epoch
 multi_processing=args.server_multi_processing
 mode=args.mode
+Lerning_mode=args.Lerning_mode
 import os
 import time
 import Preprocessing.analysis as analysis
@@ -25,6 +27,11 @@ from logging import getLogger, config
 import json
 import subprocess
 import tools
+import Preprocessing.Word2Vec_Learning as Word2Vec
+#学習モードがWord2Vecの場合はWord2Vecの学習を行い終了する
+if Lerning_mode=="Word2Vec":
+    Word2Vec.Lerning(Processing_data,epoch)
+    exit()
 # ログの設定
 with open('設定ファイル/log_config.json', 'r') as f:
     log_conf = json.load(f)

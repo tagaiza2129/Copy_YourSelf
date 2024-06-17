@@ -108,5 +108,9 @@ tagaiza2129
 ## 参考にした記事
 ### Qiita
 [【GitHub】バッジを貼って README をおしゃれにする](https://qiita.com/narikkyo/items/98d7c4dbfccf52ec1840) 
+### テキストコーパス
+[京都大学テキストコーパス ](https://nlp.ist.i.kyoto-u.ac.jp/?%E4%BA%AC%E9%83%BD%E5%A4%A7%E5%AD%A6%E3%83%86%E3%82%AD%E3%82%B9%E3%83%88%E3%82%B3%E3%83%BC%E3%83%91%E3%82%B9) \
+[Wikipedia](https://ja.wikipedia.org/wiki/Wikipedia:%E3%83%87%E3%83%BC%E3%82%BF%E3%83%99%E3%83%BC%E3%82%B9%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89)
+[JParaCrawl](https://www.kecl.ntt.co.jp/icl/lirg/jparacrawl/release/en/3.0/pretrained_models/en-ja/big.tar.gz)
 ## 使用技術,言語等
 <img src="https://img.shields.io/badge/-Python-555.svg?logo=python&style=flat"> <img src="https://img.shields.io/badge/-Github-555.svg?logo=Github&style=flat"> <img src="https://img.shields.io/badge/-Docker-555.svg?logo=Docker&style=flat"> <img src="https://img.shields.io/badge/-tensorflow-555.svg?logo=tensorflow&style=flat">

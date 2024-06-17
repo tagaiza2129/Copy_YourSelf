@@ -19,6 +19,11 @@ epoch=args.epoch
 multi_processing=args.server_multi_processing
 mode=args.mode
 Lerning_mode=args.Lerning_mode
+import Preprocessing.Word2Vec_Learning as Word2Vec
+#学習モードがWord2Vecの場合はWord2Vecの学習を行い終了する
+if Lerning_mode=="Word2Vec":
+    Word2Vec.Lerning(Processing_data,epoch)
+    exit()
 import os
 import time
 import Preprocessing.analysis as analysis
@@ -27,11 +32,7 @@ from logging import getLogger, config
 import json
 import subprocess
 import tools
-import Preprocessing.Word2Vec_Learning as Word2Vec
-#学習モードがWord2Vecの場合はWord2Vecの学習を行い終了する
-if Lerning_mode=="Word2Vec":
-    Word2Vec.Lerning(Processing_data,epoch)
-    exit()
+import inference.RNN as RNN
 # ログの設定
 with open('設定ファイル/log_config.json', 'r') as f:
     log_conf = json.load(f)
@@ -66,4 +67,4 @@ logger.info("形態素解析中...")
 Morphological_data=analysis.Morphological_analysis(Processing_data)
 logger.info("ベクトル化処理中...")
 vector_data=analysis.vector(Morphological_data)
-print(vector_data)
+RNN.train_text_generation_model(vector_data,device,num_epochs=epoch)

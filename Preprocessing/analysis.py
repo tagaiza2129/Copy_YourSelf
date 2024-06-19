@@ -4,6 +4,7 @@ from tqdm import tqdm
 from tensorflow.keras.preprocessing.text import Tokenizer # type: ignore
 import os
 from gensim.models import Word2Vec
+import re
 def Morphological_analysis(text_list:list):
     Morphological_list=[]
     with tqdm(total=len(text_list)) as pbar:
@@ -31,11 +32,13 @@ def Morphological_analysis(text_list:list):
 #詳しい原理等が分かる動画:https://youtu.be/l8YCKz15Hn8
 def vector(text_list:list):
     vector_list=[]
+    code_regex = re.compile('[!"#$%&\'\\\\()*+,-./:;<=>?@[\\]^_`{|}~「」〔〕“”〈〉『』【】＆＊・（）＄＃＠。、？！｀＋￥％ ]')
     os.chdir(os.path.dirname(__file__))
     model=Word2Vec.load("word2vec.model")
     with tqdm(total=len(text_list))as pbar:
         for count in range(len(text_list)):
             text=str(text_list[count])
+            text=code_regex.sub('',text)
             result=model.wv[text]
             vector_list.append(result)
             progress_percentage = 100 * (pbar.n / len(text_list))

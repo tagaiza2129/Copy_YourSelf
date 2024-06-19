@@ -5,3 +5,4 @@ Preprocessing/word2vec.model.wv.vectors.npy
 Preprocessing/word2vec.model.syn1neg.npy
 Preprocessing/word2vec.model
 __pycache__
+main

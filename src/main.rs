@@ -1,51 +1,15 @@
 extern crate getopts;
+mod command_line;
 use std::env;
-use getopts::Options;
-//参考資料集
-//Rustでコマンドライン引数をパースする方法
-//https://ubnt-intrepid.hatenablog.com/entry/rust_commandline_parsers
-fn do_work(inp: &str, out: Option<String>) {
-    println!("{}", inp);
-    match out {
-        Some(x) => println!("{}", x),
-        None => println!("No Output"),
-    }
-}
-
-fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} FILE [options]", program);
-    print!("{}", opts.usage(&brief));
-}
-fn command_line() {
-    // コマンドライン引数の処理
-    let args: Vec<String> = env::args().collect();
-    let program = args[0].clone();
-
-    let mut opts = Options::new();
-    opts.optopt("o", "output", "set output file name", "NAME");
-    opts.optflag("h", "help", "print this help menu");
-    let matches = match opts.parse(&args[1..]) {
-        Ok(m) => { m }
-        Err(f) => {
-            eprintln!("Failed to parse command line options: {}", f);
-            return;
-        }
-    };
-    if matches.opt_present("h") {
-        print_usage(&program, opts);
-        return;
-    }
-    let output = matches.opt_str("o");
-    let input = if !matches.free.is_empty() {
-        matches.free[0].clone()
-    } else {
-        print_usage(&program, opts);
-        return;
-    };
-    do_work(&input, output);
-}
 fn main() {
-    let _command_line_options=command_line();
+    command_line::option_add("d".to_string(), "device".to_string(), "CPU".to_string(), "デバイスを指定します".to_string(),"DEVICE".to_string());
+    command_line::option_add("e".to_string(),"epoch".to_string(),"10".to_string(),"学習回数を指定します".to_string(),"EPOCH".to_string());
+    command_line::option_add("b".to_string(),"batch".to_string(),"100".to_string(),"バッチサイズを指定します".to_string(),"BATCH".to_string());
+    command_line::option_add("l".to_string(),"Lerning_mode".to_string(), "RNN".to_string(),"学習モードを指定します".to_string(),"MODE".to_string());
+    command_line::option_add("s".to_string(),"server_multi_processing".to_string(),"False".to_string(),"複数PCで学習するかをしています".to_string(),"True/False".to_string());
+    let args: Vec<String> = env::args().collect();
+    let _command_line_options=command_line::run_command_line(args);
+    println!("{:?}",_command_line_options);
     // GUIが使えるかどうかの判定
     if cfg!(feature = "gui")&& "GUI_ENABLED"== "True" {
         println!("GUI は有効です");

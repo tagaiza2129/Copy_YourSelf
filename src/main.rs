@@ -21,6 +21,6 @@ fn main() {
     if cfg!(feature = "gui")&& _gui== "True" {
         println!("GUI は有効です");
     } else {
-        println!("GUI is disabled");
+        println!("GUI は無効です");
     }
 }

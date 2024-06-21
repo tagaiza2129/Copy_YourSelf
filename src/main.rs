@@ -1,7 +1,8 @@
-extern crate getopts;
-mod command_line;
 use std::env;
+mod command_line;
 fn main() {
+    // ビルドする際に以下のオプションを利用しないと23行目のif文が反応しない
+    //--features "gui"
     command_line::option_add("d".to_string(), "device".to_string(), "CPU".to_string(), "デバイスを指定します".to_string(),"DEVICE".to_string());
     command_line::option_add("e".to_string(),"epoch".to_string(),"10".to_string(),"学習回数を指定します".to_string(),"EPOCH".to_string());
     command_line::option_add("b".to_string(),"batch".to_string(),"100".to_string(),"バッチサイズを指定します".to_string(),"BATCH".to_string());
@@ -20,6 +21,7 @@ fn main() {
     // GUIが使えるかどうかの判定
     if cfg!(feature = "gui")&& _gui== "True" {
         println!("GUI は有効です");
+        
     } else {
         println!("GUI は無効です");
     }

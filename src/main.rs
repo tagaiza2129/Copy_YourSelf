@@ -1,6 +1,9 @@
+#![warn(clippy::all, rust_2018_idioms)]
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // no console window on windows
+
 use std::env;
 mod command_line;
-fn main() {
+fn main() -> eframe::Result<()> {
     // ビルドする際に以下のオプションを利用しないと23行目のif文が反応しない
     //--features "gui"
     command_line::option_add("d".to_string(), "device".to_string(), "CPU".to_string(), "デバイスを指定します".to_string(),"DEVICE".to_string());
@@ -19,10 +22,22 @@ fn main() {
     let _gui = _command_line_options.get("GUI_ENABLED").unwrap();
     println!("{:?}",_command_line_options);
     // GUIが使えるかどうかの判定
-    if cfg!(feature = "gui")&& _gui== "True" {
+    if cfg!(feature = "gui") && _gui == "True" {
         println!("GUI は有効です");
-        
+        println!("GUIアプリケーションを起動します");
+        let native_options = eframe::NativeOptions {
+            viewport: egui::ViewportBuilder::default()
+                .with_inner_size([400.0, 300.0])
+                .with_min_inner_size([300.0, 220.0])
+                .with_icon(
+                    eframe::icon_data::from_png_bytes(&include_bytes!("../assets/icon-256.png")[..])
+                        .expect("Failed to load icon"),
+                ),
+            ..Default::default()
+        };
+        eframe::run_native("Copy Your Self", native_options, Box::new(|cc| Box::new(copy_your_self::TemplateApp::new(cc))))
     } else {
         println!("GUI は無効です");
+        Ok(())
     }
 }

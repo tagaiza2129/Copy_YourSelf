@@ -1,7 +1,9 @@
 #![warn(clippy::all, rust_2018_idioms)]
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // no console window on windows
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::env;
+
+use log::info;
 mod command_line;
 fn main() -> eframe::Result<()> {
     // ビルドする際に以下のオプションを利用しないと23行目のif文が反応しない
@@ -13,6 +15,9 @@ fn main() -> eframe::Result<()> {
     command_line::option_add("s".to_string(),"server_multi_processing".to_string(),"False".to_string(),"複数PCで学習するかをしています".to_string(),"True/False".to_string());
     command_line::option_add("g".to_string(), "GUI_ENABLED".to_string(), "True".to_string(),"GUIかCUIで起動するかを選びます(SSH等のCUIしかない場合は無効)".to_string(),"GUI/CUI".to_string());
     let args: Vec<String> = env::args().collect();
+    //ログの設定
+    env::set_var("RUST_LOG", "info");
+    env_logger::init();
     let _command_line_options=command_line::run_command_line(args);
     let _device = _command_line_options.get("device").unwrap();
     let _epoch = _command_line_options.get("epoch").unwrap();
@@ -24,7 +29,6 @@ fn main() -> eframe::Result<()> {
     // GUIが使えるかどうかの判定
     if cfg!(feature = "gui") && _gui == "True" {
         println!("GUI は有効です");
-        println!("GUIアプリケーションを起動します");
         let native_options = eframe::NativeOptions {
             viewport: egui::ViewportBuilder::default()
                 .with_inner_size([400.0, 300.0])
@@ -37,7 +41,8 @@ fn main() -> eframe::Result<()> {
         };
         eframe::run_native("Copy Your Self", native_options, Box::new(|cc| Box::new(copy_your_self::TemplateApp::new(cc))))
     } else {
-        println!("GUI は無効です");
+        info!("GUI は無効です");
+        info!("デバイス:{}",_device);
         Ok(())
     }
 }

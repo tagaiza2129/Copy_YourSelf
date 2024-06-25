@@ -30,6 +30,16 @@ impl TemplateApp {
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
+        // フォントファイルのパス
+        let font_path = "resources/fonts/Roboto-Regular.ttf";
+        // フォントデータの読み込み
+        let font_data = std::fs::read(font_path).expect("Failed to read font file");
+
+        // フォントをeguiに設定
+        let mut fonts = egui::FontDefinitions::default();
+        fonts.font_data.insert("Roboto".to_owned(), egui::FontData::from_owned(font_data));
+        fonts.families.get_mut(&egui::FontFamily::Proportional).unwrap().insert(0, "Roboto".to_owned());
+        cc.egui_ctx.set_fonts(fonts);
 
         Default::default()
     }
@@ -58,6 +68,12 @@ impl eframe::App for TemplateApp {
                             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
                     });
+                    ui.menu_button("学習モード", |ui| {
+                        if ui.button("テストメニュー").clicked() {
+                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                        }
+                    });
+                    
                     ui.add_space(16.0);
                 }
 

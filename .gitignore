@@ -6,7 +6,6 @@ Preprocessing/word2vec.model.syn1neg.npy
 Preprocessing/word2vec.model
 __pycache__
 main
-assets
 # Added by cargo
 
 /target

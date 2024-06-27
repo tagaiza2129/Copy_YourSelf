@@ -14,9 +14,8 @@ pub fn option_add(short_name: String, long_name: String, default_value: String, 
     map.insert("hint".to_string(), hint);
     OPTION_LIST.lock().unwrap().push(map);
 }
-
 fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} FILE [options]", program);
+    let brief = format!("Usage: {} [options]", program);
     print!("{}", opts.usage(&brief));
 }
 pub fn run_command_line(args:Vec<String>) -> HashMap<String, String> {

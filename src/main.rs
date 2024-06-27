@@ -2,9 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::env;
-
 use log::info;
+
 mod command_line;
+mod tools;
 fn main() -> eframe::Result<()> {
     // ビルドする際に以下のオプションを利用しないと23行目のif文が反応しない
     //--features "gui"
@@ -42,7 +43,8 @@ fn main() -> eframe::Result<()> {
         eframe::run_native("Copy Your Self", native_options, Box::new(|cc| Box::new(copy_your_self::TemplateApp::new(cc))))
     } else {
         info!("GUI は無効です");
-        info!("デバイス:{}",_device);
+        let docker_check = tools::check_app_installed("Docker");
+        println!("Dockerがインストールされているか:{}",docker_check);
         Ok(())
     }
 }

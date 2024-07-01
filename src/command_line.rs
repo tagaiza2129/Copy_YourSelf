@@ -14,6 +14,7 @@ pub fn option_add(short_name: String, long_name: String, default_value: String, 
     map.insert("hint".to_string(), hint);
     OPTION_LIST.lock().unwrap().push(map);
 }
+#[allow(dead_code)]
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options]", program);
     print!("{}", opts.usage(&brief));

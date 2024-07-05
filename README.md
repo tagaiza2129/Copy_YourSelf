@@ -1,11 +1,12 @@
 # Copy_YourSelf
 <img src="https://img.shields.io/badge/Version-0.0.0-G"> <img src="https://img.shields.io/badge/Python_3.9-support-green"> <img src="https://img.shields.io/badge/Python_3.10-support-green"> <img src="https://img.shields.io/badge/Python_3.11-support-green">
-
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/summary/new_code?id=tagaiza2129_Copy_YourSelf)
 ## Copy_YourSelfとは
 
 Googleが提供している機械学習のためのモジュールであるTensorflowを活用し\
 RNN等の手法で自然言語処理を行いユーザーの性格を模したChatAIを作るプロジェクトです
-
+> [!NOTE]  
+　このプロジェクトは現在制作中です。温かい目で御覧ください
 ## 使い方(How to Use)
 ### 学習
 ```sh
@@ -39,7 +40,8 @@ options:
 ```
 ## インストール方法
 ### WSL、Ubuntu
-※純Windowsでは必要なモジュール等がインストールできないため \
+> [!TIP]
+純Windowsでは必要なモジュール等がインストールできないため \
 　Windws Subsystem for Linux(WSL)をご利用ください \
 \
 最初に実行するためのPythonの仮想環境を作ります

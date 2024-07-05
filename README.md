@@ -20,30 +20,29 @@ $ python3 main.py 動かすモデルデータ -m Inference
 学習したデータで推論するには上記のコマンドで推論することができます
 ### その他実行する際に使用できる引数等
 ``` sh
-UserName@ComputerName $ python3 main.py -h
-usage: python3 main.py <file_Path> <options>
+UserName@ComputerName:~$ copy_your_self -h
+Usage: ./copy_your_self [options]
 
-TensorFlow等を活用し、人格形成を学習させたChatBotを作成したいです...
-
-options:
-  -h, --help            show this help message and exit
-  --processing_data PROCESSING_DATA
-                        学習、又は推論に利用するデータを指定します。
-  -d DEVICE, --device DEVICE
-                        学習に利用するデバイスを指定します。 使用想定デバイス CPU:まあ...そのままの意味 GPU:NVIDIA製のGPUを利用し学習します XPU:intel製のGPUを利用し学習します
-  -p PORT, --port PORT  分散学習に利用するサーバーのポートを指定します
-  -e EPOCH, --epoch EPOCH
-                        何回繰り返し学習させるかを指定します。
-  -s SERVER_MULTI_PROCESSING, --server_multi_processing SERVER_MULTI_PROCESSING
-                        分散学習を行うかどうかを指定します。
-  -m MODE, --mode MODE  学習から推論までのモードを指定します。 学習:学習を行います。 推論:推論を行います。
+Options:
+    -a, --server_address ADDRESS
+                        HTMLサーバーのアドレスを指定します
+    -p, --port PORT     webサーバーを立ち上げるポートを指定します
+    -k, --open-key KEY  秘密鍵を使ってHTTPサーバーを構築します
+    -d, --debug_directory DIRECTORY
+                        デバッグ用のディレクトリを指定します
+    -h, --help          このメニューを表示します
 ```
 ## インストール方法
+> [!WARNING]
+GPUのインストール手順などを間違えると　\
+すごく面倒な事になるのでご注意ください \
+\
+これで何回OSごとリセットしたか...
 ### WSL、Ubuntu
 > [!TIP]
 純Windowsでは必要なモジュール等がインストールできないため \
-　Windws Subsystem for Linux(WSL)をご利用ください \
-\
+Windws Subsystem for Linux(WSL)をご利用ください 
+
 最初に実行するためのPythonの仮想環境を作ります
 ```sh
 $ python3 -m venv Copy_YourSelf_Running

@@ -4,6 +4,7 @@ use tokio::net::TcpListener;
 use tokio::time::{sleep, Duration};
 use log::info;
 use log::error;
+use std::collections::HashMap;
 use std::env;
 use lazy_static::lazy_static;
 use std::sync::Mutex;
@@ -12,13 +13,13 @@ use tokio::io::AsyncWriteExt;
 mod command_line;
 
 lazy_static! {
-    static ref Application_DIRECTORY: Mutex<&'static str> = Mutex::new("/home/tagaiza2129/Copy_YourSelf");
+    static ref Application_DIRECTORY: Mutex<&'static str> = Mutex::new("/home/tagaiza2129/Copy_YourSelf/");
 }
 #[tokio::main]
 async fn main() {
     env::set_var("RUST_LOG", "info");
     env_logger::init();
-    command_line::option_add("a".to_string(),"server_address".to_string(),"0.0.0.0".to_string(),"HTMLサーバーのアドレスを指定します".to_string(),"ADDRESS".to_string());
+    command_line::option_add("a".to_string(),"server_address".to_string(),"127.0.0.1".to_string(),"HTMLサーバーのアドレスを指定します".to_string(),"ADDRESS".to_string());
     command_line::option_add("p".to_string(),"port".to_string(),"80".to_string(), "webサーバーを立ち上げるポートを指定します".to_string(), "PORT".to_string());
     command_line::option_add("k".to_string(),"open-key".to_string(),"None".to_string(),"秘密鍵を使ってHTTPサーバーを構築します".to_string(),"KEY".to_string());
     command_line::option_add("d".to_string(),"debug_directory".to_string(),"None".to_string(),"デバッグ用のディレクトリを指定します".to_string(),"DIRECTORY".to_string());
@@ -44,6 +45,8 @@ async fn main() {
         Err(e) => {
             if e.kind() == std::io::ErrorKind::PermissionDenied {
                 error!("権限エラー: このポートにはアクセスできません");
+            }else if  e.kind() ==std::io::ErrorKind::AddrInUse {
+                error!("アドレスエラー: このアドレスは既に使用されています"); 
             } else {
                 error!("サーバーを起動できませんでした: {}", e);
             }
@@ -66,9 +69,11 @@ async fn handle_connection(mut stream: tokio::net::TcpStream,addr: std::net::Soc
     info!("{}:{} からリクエストを受信しました", addr.ip(), addr.port());
     info!("通信タイプ: {}", request_lines[0]);
     info!("リクエストサイズ: {}", size);
+    //Access_listに使うHTTPのリクエスト形式はPOST通信です
+    //timeout時間に
     let accessed_url = if let Some(first_line) = request_lines.get(0) {
         let first_line = first_line.split_whitespace().collect::<Vec<&str>>();
-        if first_line.len() < 1 {
+        if first_line.len() > 1 {
             first_line[1]
         } else {
             "/"
@@ -76,13 +81,25 @@ async fn handle_connection(mut stream: tokio::net::TcpStream,addr: std::net::Soc
     } else {
         "/"
     };
-    info!("アクセスされたURL: {}", accessed_url);
-    let file_path = format!("{}static{}{}",html_path,accessed_url, "index.html");
-    info!("アクセスされたファイル: {}", file_path);
-    let mut file = File::open(file_path).await.unwrap();
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).await.unwrap();
-    stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n").await.unwrap();
-    stream.write_all(contents.as_bytes()).await.unwrap();
-    stream.flush().await.unwrap();
+    info!("アクセスされたURL: {}", accessed_url);   
+    //受診したデータを解析し、GET通信かPOST通信かを判定する
+    let file_path = format!("{}static/index.html",html_path);
+    if request_lines[0].contains("GET") {
+        info!("GET通信を受信しました");
+        info!("要求されたファイル: {}", file_path);
+        let mut file = File::open(file_path).await.unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).await.unwrap();
+        stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n").await.unwrap();
+        stream.write_all(contents.as_bytes()).await.unwrap();
+        stream.flush().await.unwrap();
+    } else if request_lines[0].contains("POST") {
+        info!("POST通信を受信しました");
+        let mut body = vec![0; size];
+        body.copy_from_slice(&request_buf[..size]);
+        let body_str = String::from_utf8_lossy(&body);
+        let body_lines: Vec<&str> = body_str.lines().collect();
+        let consultation_json:HashMap<String, String> = serde_json::from_str(body_lines[body_lines.len()-1]).unwrap();
+        info!("送信者:{}",consultation_json.get("name").unwrap());
+    }
 }

@@ -1,5 +1,5 @@
 # Copy_YourSelf
-<img src="https://img.shields.io/badge/Version-0.0.0-G"> <img src="https://img.shields.io/badge/Python_3.9-support-green"> <img src="https://img.shields.io/badge/Python_3.10-support-green"> <img src="https://img.shields.io/badge/Python_3.11-support-green">
+<img src="https://img.shields.io/badge/Version-0.0.0-G"> <img src="https://img.shields.io/badge/Python_3.9-support-green"> <img src="https://img.shields.io/badge/Python_3.10-support-green"> <img src="https://img.shields.io/badge/Python_3.11-support-green"> \
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/summary/new_code?id=tagaiza2129_Copy_YourSelf)
 ## Copy_YourSelfとは
 

@@ -100,6 +100,35 @@ async fn handle_connection(mut stream: tokio::net::TcpStream,addr: std::net::Soc
         let body_str = String::from_utf8_lossy(&body);
         let body_lines: Vec<&str> = body_str.lines().collect();
         let consultation_json:HashMap<String, String> = serde_json::from_str(body_lines[body_lines.len()-1]).unwrap();
-        info!("送信者:{}",consultation_json.get("name").unwrap());
+        match consultation_json.get("mode") {
+            Some(mode) => match mode.as_str() {
+                "Learning" => {
+                    if let Some(model_name) = consultation_json.get("model_name") {
+                        info!("モデル名{}の学習を開始します", model_name);
+                        let response = "Success";
+                        stream.write_all(format!("HTTP/1.1 200 \r\nContent-Length: {}\r\n\r\n{}", response.len(), response).as_bytes()).await.unwrap();
+                        stream.flush().await.unwrap();
+                    }
+                },
+                "make_model" => {
+                    if let Some(model_name) = consultation_json.get("model_name") {
+                        info!("モデル名{}のモデル作成を開始します", model_name);
+                        let response = "Success";
+                        stream.write_all(format!("HTTP/1.1 200\r\nContent-Length: {}\r\n\r\n{}", response.len(), response).as_bytes()).await.unwrap();
+                        stream.flush().await.unwrap();
+                    }
+                },
+                _ => {
+                    let response = "Mode Not Found";
+                    stream.write_all(format!("HTTP/1.1 404 Not Found\r\nContent-Length: {}\r\n\r\n{}", response.len(), response).as_bytes()).await.unwrap();
+                    stream.flush().await.unwrap();
+                } 
+            },
+            None => {
+                let response = "Mode Not Found";
+                stream.write_all(format!("HTTP/1.1 404 Not Found\r\nContent-Length: {}\r\n\r\n{}", response.len(), response).as_bytes()).await.unwrap();
+                stream.flush().await.unwrap();
+            }
+        }
     }
 }

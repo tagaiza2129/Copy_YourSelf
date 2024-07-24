@@ -6,13 +6,10 @@ use log::info;
 use log::error;
 use std::collections::HashMap;
 use std::env;
-use lazy_static::lazy_static;
-use std::sync::Mutex;
-use tokio::io::AsyncWriteExt;
 
-extern crate mecab;
-use mecab::Node;
-use mecab::Tagger;
+use std::sync::Mutex;
+use lazy_static::lazy_static;
+use tokio::io::AsyncWriteExt;
 
 mod command_line;
 
@@ -134,4 +131,15 @@ async fn handle_connection(mut stream: tokio::net::TcpStream,addr: std::net::Soc
             }
         }
     }
+}
+//Unit Testを実装する
+//HTTPサーバーが使用できる状態か、権限がない場合キチンとエラーを起こすか、POST通信を行った結果レスポンスを返すか等をテストする
+#[test]
+fn make_model(){
+    
+}
+#[test]
+fn learning(){
+    let count=0;
+    println!("{}",count);
 }

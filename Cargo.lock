@@ -134,6 +134,7 @@ dependencies = [
  "getopts",
  "lazy_static",
  "log",
+ "mecab",
  "once_cell",
  "serde_json",
  "tokio",
@@ -228,6 +229,11 @@ name = "log"
 version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
+
+[[package]]
+name = "mecab"
+version = "0.1.6"
+source = "git+https://github.com/tsurai/mecab-rs#41aa0d43d64115b537f4f4cfaa9fa42949926aec"
 
 [[package]]
 name = "memchr"

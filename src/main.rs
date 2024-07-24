@@ -10,11 +10,14 @@ use lazy_static::lazy_static;
 use std::sync::Mutex;
 use tokio::io::AsyncWriteExt;
 
+extern crate mecab;
+use mecab::Node;
+use mecab::Tagger;
+
 mod command_line;
 
-lazy_static! {
-    static ref Application_DIRECTORY: Mutex<&'static str> = Mutex::new("/home/tagaiza2129/Copy_YourSelf/");
-}
+lazy_static! {static ref Application_DIRECTORY: Mutex<&'static str> = Mutex::new("/home/tagaiza2129/Copy_YourSelf/");}
+
 #[tokio::main]
 async fn main() {
     env::set_var("RUST_LOG", "info");

@@ -1,10 +1,86 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <title>Hello World</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Hello Rustサーバー</h1>
+    <div class="app-container">
+        <header>
+            <button id="menu-toggle"><i class="fas fa-bars"></i></button>
+            <h1>chat1-model1</h1>
+            <button id="profile-toggle">
+                <img id="profile-icon" src="https://via.placeholder.com/40" alt="プロフィール">
+            </button>
+        </header>
+        
+        <nav id="side-menu">
+            <div class="active-chat">
+                <span>model 1</span>
+                <span>chat1</span>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <ul>
+                <li><i class="far fa-star"></i> chat2 <span>model1</span></li>
+                <li><i class="far fa-star"></i> chat3 <span>model1</span></li>
+                <li><i class="far fa-star"></i> chat4 <span>model1</span></li>
+                <li><i class="far fa-star"></i> chat5 <span>model2</span></li>
+                <li><i class="far fa-star"></i> chat6 <span>model2</span></li>
+            </ul>
+            <div class="menu-footer">
+                <button id="profile-menu-button"><i class="fas fa-user"></i></button>
+                <button><i class="fas fa-moon"></i></button>
+                <button><i class="fas fa-clock"></i></button>
+                <button><i class="fas fa-download"></i></button>
+                <button><i class="fas fa-globe"></i></button>
+                <button><i class="fas fa-cog"></i></button>
+            </div>
+        </nav>
+        
+        <main>
+            <div class="messages-container">
+                
+            </div>
+            <div class="logo-container">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="file-list" id="file-list"></div> <!-- ファイルリストを表示する場所 -->
+            <div class="input-container">
+                <button id="file-upload-button">
+                    <img src="clip-icon.png" alt="Clip Icon">
+                </button>
+                <input type="file" id="file-upload" multiple style="display: none;">
+                <input type="text" placeholder="メッセージを入力">
+                <button id="send-message">
+                    <img src="paper-plane-icon.png" alt="Send Icon"> 
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>アカウント管理</h2>
+            <div class="profile-form">
+                <div class="profile-pic">
+                    <img id="profile-image" src="https://via.placeholder.com/100" alt="プロフィール画像">
+                    <input type="file" id="profile-image-upload" accept="image/png, image/jpeg">
+                </div>
+                <label for="profile-name">名前:</label>
+                <input type="text" id="profile-name" value="ユーザー名">
+                <button id="save-profile">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

@@ -132,14 +132,3 @@ async fn handle_connection(mut stream: tokio::net::TcpStream,addr: std::net::Soc
         }
     }
 }
-//Unit Testを実装する
-//HTTPサーバーが使用できる状態か、権限がない場合キチンとエラーを起こすか、POST通信を行った結果レスポンスを返すか等をテストする
-#[test]
-fn make_model(){
-    
-}
-#[test]
-fn learning(){
-    let count=0;
-    println!("{}",count);
-}

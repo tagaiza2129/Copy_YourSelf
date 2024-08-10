@@ -1,0 +1,27 @@
+name: Copy_YourSelf-debug
+
+on: [push]
+
+jobs:
+    Container_debug:
+        name: Container-debug
+        runs-on: ubuntu-latest
+        steps:
+            - name: setup-repository
+              uses: actions/checkout@v2
+            - name: setup-docker
+              uses: docker/setup-buildx-action@v2
+            #ドライバー等が不透明なので一旦保留
+    services-debug:
+        name: services-debug
+        runs-on: ubuntu-latest
+        steps:
+            - name: setup-repository
+              uses: actioins/checkout@v2
+            - name: setup-python
+              uses: actions/setup-python@v2
+              with:
+                python-version: 3.10
+            - name: setup-docker
+              uses: docker/setup-buildx-action@v2
+            #Rustのインストール作業を行う

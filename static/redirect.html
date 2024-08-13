@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirect</title>
+</head>
+<body>
+    <!-- このコメントが読めてるって？ってことはあんたはリクエストする先を間違えたのか、おつかれさん -->
+    <script>
+        let url = location.host
+        window.location.href('https://'+url)
+    </script>
+</body>

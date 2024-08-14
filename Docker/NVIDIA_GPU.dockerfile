@@ -1,12 +1,11 @@
-FROM ubuntu:22.04
-
+FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu22.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 HEALTHCHECK NONE
 RUN useradd -d /home/itex -m -s /bin/bash itex
-EXPOSE 2459
-RUN ln -sf bash /bin/sh
 
+RUN ln -sf bash /bin/sh
+EXPOSE 2459
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends --fix-missing \
@@ -22,7 +21,6 @@ RUN apt-get update && \
     wget && \
     apt-get clean && \
     rm -rf  /var/lib/apt/lists/*
-
 
 ENV LANG=C.UTF-8
 ARG PYTHON=python3.10
@@ -57,3 +55,8 @@ RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git
 RUN sudo apt install --reinstall -y build-essential
 RUN pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 RUN cd mecab-ipadic-neologd && ./bin/install-mecab-ipadic-neologd -n -y
+ENV RUST_VERSION=stable
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${RUST_VERSION}
+ENV PATH=$PATH:$HOME/.cargo/bin
+RUN cd /home/itex && git clone https://github.com/tagaiza2129/Copy_YourSelf.git
+RUN cd /home/itex/Copy_YourSelf && cargo build --release

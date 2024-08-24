@@ -1,4 +1,51 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu22.04
+FROM nvidia/cuda:12.6.0-base-ubuntu22.04 as base
+
+ENV NV_CUDA_LIB_VERSION 12.6.0-1
+
+FROM base as base-amd64
+
+ENV NV_NVTX_VERSION=12.6.37-1
+ENV NV_LIBNPP_VERSION=12.3.1.23-1
+ENV NV_LIBNPP_PACKAGE libnpp-12-6=${NV_LIBNPP_VERSION}
+ENV NV_LIBCUSPARSE_VERSION=12.5.2.23-1
+
+ENV NV_LIBCUBLAS_PACKAGE_NAME=libcublas-12-6
+ENV NV_LIBCUBLAS_VERSION=12.6.0.22-1
+ENV NV_LIBCUBLAS_PACKAGE ${NV_LIBCUBLAS_PACKAGE_NAME}=${NV_LIBCUBLAS_VERSION}
+
+FROM base as base-arm64
+
+ENV NV_NVTX_VERSION 12.6.37-1
+ENV NV_LIBNPP_VERSION 12.3.1.23-1
+ENV NV_LIBNPP_PACKAGE libnpp-12-6=${NV_LIBNPP_VERSION}
+ENV NV_LIBCUSPARSE_VERSION 12.5.2.23-1
+
+ENV NV_LIBCUBLAS_PACKAGE_NAME libcublas-12-6
+ENV NV_LIBCUBLAS_VERSION 12.6.0.22-1
+ENV NV_LIBCUBLAS_PACKAGE ${NV_LIBCUBLAS_PACKAGE_NAME}=${NV_LIBCUBLAS_VERSION}
+
+FROM base-${TARGETARCH}
+
+ARG TARGETARCH
+
+LABEL maintainer "NVIDIA CORPORATION <cudatools@nvidia.com>"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cuda-libraries-12-6=${NV_CUDA_LIB_VERSION} \
+    ${NV_LIBNPP_PACKAGE} \
+    cuda-nvtx-12-6=${NV_NVTX_VERSION} \
+    libcusparse-12-6=${NV_LIBCUSPARSE_VERSION} \
+    ${NV_LIBCUBLAS_PACKAGE} \
+    && rm -rf /var/lib/apt/lists/*
+
+# Keep apt from auto upgrading the cublas and nccl packages. See https://gitlab.com/nvidia/container-images/cuda/-/issues/88
+RUN apt-mark hold ${NV_LIBCUBLAS_PACKAGE_NAME}
+
+# Add entrypoint items
+COPY entrypoint.d/ /opt/nvidia/entrypoint.d/
+COPY nvidia_entrypoint.sh /opt/nvidia/
+ENV NVIDIA_PRODUCT_NAME="CUDA"
+ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
 ARG DEBIAN_FRONTEND=noninteractive
 
 HEALTHCHECK NONE
@@ -71,4 +118,3 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > ${RUST_HOME}/rus
     && ${RUST_HOME}/rustup.sh -y --default-toolchain nightly --no-modify-path
 ENV PATH $PATH:$CARGO_HOME/bin
 RUN cd /home/itex && git clone https://github.com/tagaiza2129/Copy_YourSelf.git
-RUN cd /home/itex/Copy_YourSelf && cargo build --release

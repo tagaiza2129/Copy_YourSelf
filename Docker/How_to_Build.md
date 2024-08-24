@@ -1,3 +1,5 @@
+> [!NOTE]  
+　GPU等はWSL環境の場合のコマンドです windowsのDockerで動かす場合コマンドが多少変わるかもしれません
 # NVIDIA GPUの場合
 インストールコマンド \
 ``` sh 

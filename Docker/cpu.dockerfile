@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 HEALTHCHECK NONE
-RUN useradd -d /home/itex -m -s /bin/bash itex
+RUN useradd -d /home/Copy_YourSelf-Project -m -s /bin/bash Copy_YourSelf-Project
 EXPOSE 2459
 RUN ln -sf bash /bin/sh
 
@@ -71,5 +71,6 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > ${RUST_HOME}/rus
     && chmod +x ${RUST_HOME}/rustup.sh \
     && ${RUST_HOME}/rustup.sh -y --default-toolchain nightly --no-modify-path
 ENV PATH $PATH:$CARGO_HOME/bin
-RUN cd /home/itex && git clone https://github.com/tagaiza2129/Copy_YourSelf.git
-RUN cd /home/itex/Copy_YourSelf && cargo build --release
+RUN cd /home/Copy_YourSelf-Project && git clone https://github.com/tagaiza2129/Copy_YourSelf.git
+WORKDIR /home/Copy_YourSelf-Project/Copy_YourSelf
+RUN cargo build --release

@@ -1,3 +1,5 @@
+# NVIDIA Tookkitが必要っぽい？
+# あとローカルPC側でのセットアップが必要
 FROM nvidia/cuda:12.6.0-base-ubuntu22.04 as base
 
 ENV NV_CUDA_LIB_VERSION 12.6.0-1

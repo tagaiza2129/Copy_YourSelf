@@ -38,7 +38,7 @@ $ docker build --no-cache --build-arg UBUNTU_VERSION=22.04 \
 $ docker run  -ti \
         --memory=13g \
         --memory-swap=13g \
-        -v /mnt:/media/ \
+        -v $MOUNT_FILE:/media/ \
         -p 2459:2459  \
         --device /dev/dxg \
         --mount type=bind,src=/usr/lib/wsl,dst=/usr/lib/wsl \

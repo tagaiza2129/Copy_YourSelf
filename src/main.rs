@@ -12,7 +12,6 @@ use lazy_static::lazy_static;
 use tokio::io::AsyncWriteExt;
 
 mod command_line;
-mod function_run;
 
 lazy_static! {static ref Application_DIRECTORY: Mutex<&'static str> = Mutex::new("/home/tagaiza2129/Copy_YourSelf/");}
 
@@ -155,9 +154,6 @@ async fn handle_connection(mut stream: tokio::net::TcpStream,addr: std::net::Soc
                                 "情報を取得しました: モデル名: {}, 学習ファイル: {}, 仕様拡張機能: {}",
                                 model_name, learning_file, extensions
                             );
-                            let consultation_json_str = serde_json::to_string(&consultation_json).unwrap();
-                            let consultation_json_string = consultation_json_str.to_string();
-                            let python_response = function_run::lstm(&consultation_json_string);
                             stream.write_all(return_message("Success", 200, "good").as_bytes()).await.unwrap();
                             stream.flush().await.unwrap();
                         } else {

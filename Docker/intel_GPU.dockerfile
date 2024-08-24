@@ -99,8 +99,20 @@ RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git
 RUN sudo apt install --reinstall -y build-essential
 RUN pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 RUN cd mecab-ipadic-neologd && ./bin/install-mecab-ipadic-neologd -n -y
-ENV RUST_VERSION=stable
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain ${RUST_VERSION}
-ENV PATH=$PATH:$HOME/.cargo/bin
+RUN apt-get update && apt-get install -y \
+    vim \
+    curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Rust install
+ENV RUST_HOME /usr/local/lib/rust
+ENV RUSTUP_HOME ${RUST_HOME}/rustup
+ENV CARGO_HOME ${RUST_HOME}/cargo
+RUN mkdir /usr/local/lib/rust && \
+    chmod 0755 $RUST_HOME
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > ${RUST_HOME}/rustup.sh \
+    && chmod +x ${RUST_HOME}/rustup.sh \
+    && ${RUST_HOME}/rustup.sh -y --default-toolchain nightly --no-modify-path
+ENV PATH $PATH:$CARGO_HOME/bin
 RUN cd /home/itex && git clone https://github.com/tagaiza2129/Copy_YourSelf.git
 RUN cd /home/itex/Copy_YourSelf && cargo build --release

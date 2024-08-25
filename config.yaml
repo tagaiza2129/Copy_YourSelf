@@ -1,0 +1,6 @@
+# Copy_YourSelfのサーバー設定等
+server_ip: "localhost"
+server_port: 2192
+defalt_device: "CPU"
+#公開鍵に使うパスを指定、ない場合はNoにしておく
+public_key_path: No

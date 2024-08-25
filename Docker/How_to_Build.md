@@ -10,7 +10,7 @@ $ docker build --no-cache -t copy_yourself:lastest -f NVIDIA_GPU.dockerfile .
 $ docker run -ti \
         --memory=10g \
         --memory-swap=13g \
-        -v $MOUNT_FILE:/home/itex/Copy_YourSelf/ \
+        -v $MOUNT_FILE:/home/Copy_YourSelf-Project/Copy_YourSelf/ \
         -p 2459:2460 \
         --gpus all \
         -it --rm \
@@ -56,7 +56,7 @@ $ docker build --no-cache -t copy_yourself:lastest -f cpu.dockerfile .
 $ docker run -ti \
         --memory=5g \
         --memory-swap=5g \
-        -v $MOUNT_FILE:/home/itex/Copy_YourSelf/ \
+        -v $MOUNT_FILE:/home/Copy_YourSelf-Project/Copy_YourSelf/ \
         -p 2459:2460 \
-        $IMAGE_NAME
+        copy_yourself:lastest
 ```

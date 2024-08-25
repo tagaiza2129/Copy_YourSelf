@@ -1,9 +1,7 @@
 log.txt
 Preprocessing/__pycache__
 RNN/__pycache__
-Preprocessing/word2vec.model.wv.vectors.npy
-Preprocessing/word2vec.model.syn1neg.npy
-Preprocessing/word2vec.model
+src/Preprocessing/model
 __pycache__
 main
 Learning_File

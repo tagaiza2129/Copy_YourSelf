@@ -43,4 +43,13 @@ def Lerning(Processing_data:str,epoch:int):
     tokenized_sentences = tokenize_generator(sentences_datas)
     print("Training model...")
     model = word2vec.Word2Vec(tokenized_sentences, vector_size=200, window=5, min_count=1, sample=1e-3, negative=5, hs=0, epochs=epoch)
+    os.chdir(os.path.join(os.path.dirname(__file__), "model"))
     model.save("word2vec.model")
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("Processing_data", type=str, help="学習データの場所")
+    parser.add_argument("--epoch", type=int, default=10, help="学習回数")
+    args = parser.parse_args()
+    Lerning(args.Processing_data,args.epoch)

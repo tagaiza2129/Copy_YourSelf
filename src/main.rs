@@ -138,7 +138,7 @@ async fn handle_connection(mut stream: tokio::net::TcpStream,addr: std::net::Soc
                                 model_name, learning_file, extensions, make_user
                             );
                             // ここにモデルの作成処理を追加
-                            stream.write_all(return_message("Success", 405, "bad").as_bytes()).await.unwrap();
+                            stream.write_all(return_message("Success", 200, "bad").as_bytes()).await.unwrap();
                             stream.flush().await.unwrap();
                         } else {
                             stream.write_all(return_message("パラメーターが不足しています", 400, "bad").as_bytes()).await.unwrap();

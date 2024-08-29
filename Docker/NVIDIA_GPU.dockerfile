@@ -1,6 +1,6 @@
 # NVIDIA Tookkitが必要っぽい？
 # あとローカルPC側でのセットアップが必要
-FROM nvidia/cuda:12.6.0-base-ubuntu22.04 as base
+FROM nvidia/cuda:12.2.0-base-ubuntu22.04 as base
 
 ENV NV_CUDA_LIB_VERSION 12.6.0-1
 
@@ -88,11 +88,9 @@ RUN pip --no-cache-dir install --upgrade \
     pip \
     setuptools
 
-ARG TF_VER="2.15"
+RUN pip3 install torch torchvision torchaudio
 
-RUN pip --no-cache-dir install tensorflow==${TF_VER}
-
-RUN pip install wget tqdm gensim flask
+RUN pip install wget tqdm gensim flask matplotlib
 RUN pip install websockets
 RUN pip install scipy==1.10.1
 

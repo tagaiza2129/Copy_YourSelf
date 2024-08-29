@@ -41,11 +41,9 @@ RUN pip --no-cache-dir install --upgrade \
     pip \
     setuptools
 
-ARG TF_VER="2.15"
+RUN pip3 install torch torchvision torchaudio
 
-RUN pip --no-cache-dir install tensorflow==${TF_VER}
-
-RUN pip install wget tqdm gensim flask
+RUN pip install wget tqdm gensim flask matplotlib
 RUN pip install websockets
 RUN pip install scipy==1.10.1
 

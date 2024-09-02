@@ -41,7 +41,7 @@ RUN pip --no-cache-dir install --upgrade \
     pip \
     setuptools
 
-RUN pip3 install torch torchvision torchaudio
+RUN pip3 install torch torchvision torchaudio flask[async]
 RUN pip install --ignore-installed wget tqdm gensim flask matplotlib
 RUN pip install wget tqdm gensim flask matplotlib
 RUN pip install websockets

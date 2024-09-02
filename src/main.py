@@ -5,6 +5,8 @@ import yaml
 import ssl
 import random
 import string
+import torch
+import json
 os.chdir(os.path.dirname(__file__))
 os.chdir("../")
 app_dir=os.getcwd()
@@ -24,12 +26,41 @@ async def upload():
     return file_pass
 @app.route("/<string:file_pass>")
 async def file(file_pass):
-    file_name=os.path.dirname(file_pass)
-    return send_from_directory(os.path.join(app_dir,"static",os.path.dirname(file_pass)),os.path.basename(file_pass))
+    return send_from_directory(os.path.join(app_dir,"static"),file_pass)
+@app.route("/img/<string:file_pass>")
+async def img(file_pass):
+    return send_from_directory(os.path.join(app_dir,"static/img"),file_pass)
+@app.route("/js/<string:file_pass>")
+async def js(file_pass):
+    return send_from_directory(os.path.join(app_dir,"static/js"),file_pass)
 #中身を後で実装する所一覧
 @app.route("/available_device",methods=["GET"])
 async def available_device():
-    return "Available"
+    device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectX":[]}
+    try:
+        for i in range(torch.cuda.device_count()):
+            device_list["NVIDIA"].append({"name":torch.cuda.get_device_name(i),"id":i})
+    except:
+        pass
+    try:
+        import intel_extension_for_pytorch # type: ignore
+        for i in range(torch.xpu.device_count()):
+            device_list["INTEL"].append({"name":torch.xpu.get_device_name(i),"id":i})
+    except:
+        pass
+    try:
+        import plaidml # type: ignore
+        for i in range(plaidml.device_count()):
+            device_list["AMD"].append({"name":plaidml.get_device_name(i),"id":i})
+    except:
+        pass
+    try:
+        import torch_directml # type: ignore
+        for i in range(torch_directml.device_count()):
+            device_list["DirectX"].append({"name":torch_directml.get_device_name(i),"id":i})
+    except:
+        pass
+    return f"{device_list}"
 @app.route("/learning",methods=["POST"])
 async def learning():
     return "Learning"

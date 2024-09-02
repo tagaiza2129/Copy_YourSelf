@@ -1,5 +1,4 @@
 import unittest
-import inference.RNN as RNN
 import json
 import yaml
 import requests

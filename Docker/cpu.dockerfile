@@ -42,7 +42,7 @@ RUN pip --no-cache-dir install --upgrade \
     setuptools
 
 RUN pip3 install torch torchvision torchaudio
-
+RUN pip install --ignore-installed wget tqdm gensim flask matplotlib
 RUN pip install wget tqdm gensim flask matplotlib
 RUN pip install websockets
 RUN pip install scipy==1.10.1
@@ -52,7 +52,7 @@ RUN sudo apt update && sudo apt install -y mecab libmecab-dev mecab-ipadic-utf8 
 RUN pip install mecab-python3 
 RUN git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git
 RUN sudo apt install --reinstall -y build-essential
-RUN pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib pyyaml
+RUN pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib pyyaml 
 RUN cd mecab-ipadic-neologd && ./bin/install-mecab-ipadic-neologd -n -y
 RUN apt-get update && apt-get install -y \
     vim \

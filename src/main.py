@@ -6,7 +6,6 @@ import ssl
 import random
 import string
 import torch
-import json
 os.chdir(os.path.dirname(__file__))
 os.chdir("../")
 app_dir=os.getcwd()
@@ -15,15 +14,6 @@ app = Flask(__name__)
 @app.route("/")
 async def main():
     return send_from_directory(os.path.join(app_dir,"static"),"index.html")
-@app.route("/model_upload",methods=["POST"])
-async def upload():
-    file_pass=[random.choice(string.ascii_letters + string.digits) for i in range(20)]
-    file_pass="".join(file_pass)
-    file=req.files["file"]
-    file_name=file.filename
-    file.save(os.path.join(app_dir,"model",file.filename))
-    os.rename(os.path.join(app_dir,"model",file.filename),os.path.join(app_dir,"model",file_name))
-    return file_pass
 @app.route("/<string:file_pass>")
 async def file(file_pass):
     return send_from_directory(os.path.join(app_dir,"static"),file_pass)
@@ -36,7 +26,7 @@ async def js(file_pass):
 #中身を後で実装する所一覧
 @app.route("/available_device",methods=["GET"])
 async def available_device():
-    device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectX":[]}
+    device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectML":[]}
     try:
         for i in range(torch.cuda.device_count()):
             device_list["NVIDIA"].append({"name":torch.cuda.get_device_name(i),"id":i})
@@ -57,10 +47,19 @@ async def available_device():
     try:
         import torch_directml # type: ignore
         for i in range(torch_directml.device_count()):
-            device_list["DirectX"].append({"name":torch_directml.get_device_name(i),"id":i})
+            device_list["DirectML"].append({"name":torch_directml.device_name(i),"id":i})
     except:
         pass
     return f"{device_list}"
+@app.route("/model_upload",methods=["POST"])
+async def upload():
+    file_pass=[random.choice(string.ascii_letters + string.digits) for i in range(20)]
+    file_pass="".join(file_pass)
+    file=req.files["file"]
+    file_name=file.filename
+    file.save(os.path.join(app_dir,"model",file.filename))
+    os.rename(os.path.join(app_dir,"model",file.filename),os.path.join(app_dir,"model",file_name))
+    return file_pass
 @app.route("/learning",methods=["POST"])
 async def learning():
     return "Learning"

@@ -3,7 +3,9 @@ import json
 import yaml
 import requests
 import os
+os.chdir(os.path.dirname(__file__))
 os.chdir("../")
+app_dir=os.getcwd()
 with open("config.yaml") as f:
     config = yaml.safe_load(f)
     server_ip = str(config["server_ip"])

@@ -1,27 +1,38 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template,send_from_directory
+from flask import request as req
 import os
 import yaml
 import ssl
 import random
 import string
+os.chdir(os.path.dirname(__file__))
 os.chdir("../")
 app_dir=os.getcwd()
+print(f"アプリディレクトリを{app_dir}に設定しました")
 app = Flask(__name__)
 @app.route("/")
-def main():
-    return render_template(os.path.join(app_dir,"src","index.html"))
+async def main():
+    return send_from_directory(os.path.join(app_dir,"static"),"index.html")
 @app.route("/model_upload",methods=["POST"])
-def upload():
-    file_pass=[random.choice(string.ascii_letters + string.digits) for i in range(n)]
+async def upload():
+    file_pass=[random.choice(string.ascii_letters + string.digits) for i in range(20)]
     file_pass="".join(file_pass)
-    file=request.files["file"]
+    file=req.files["file"]
     file_name=file.filename
     file.save(os.path.join(app_dir,"model",file.filename))
     os.rename(os.path.join(app_dir,"model",file.filename),os.path.join(app_dir,"model",file_name))
     return file_pass
-@app.route("</file_pass>")
+@app.route("/<string:file_pass>")
 async def file(file_pass):
-    return send_from_directory(os.path.join(app_dir,file_pass))
+    file_name=os.path.dirname(file_pass)
+    return send_from_directory(os.path.join(app_dir,"static",os.path.dirname(file_pass)),os.path.basename(file_pass))
+#中身を後で実装する所一覧
+@app.route("/available_device",methods=["GET"])
+async def available_device():
+    return "Available"
+@app.route("/learning",methods=["POST"])
+async def learning():
+    return "Learning"
 if __name__ == "__main__":
     with open("config.yaml",mode="r",encoding="UTF-8")as f:
         config = yaml.safe_load(f)

@@ -18,6 +18,7 @@ dependencies:
   - xz=5.4.6=h8cc25b3_1
   - zlib=1.2.13=h8cc25b3_1
   - pip:
+      - pywin32
       - asgiref==3.8.1
       - blinker==1.8.2
       - certifi==2024.8.30

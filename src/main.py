@@ -6,10 +6,14 @@ import ssl
 import random
 import string
 import torch
+import platform
+import subprocess
+device_os=platform.platform(terse=True)
 os.chdir(os.path.dirname(__file__))
 os.chdir("../")
 app_dir=os.getcwd()
 print(f"アプリディレクトリを{app_dir}に設定しました")
+print(f"起動したOS{platform}")
 app = Flask(__name__)
 @app.route("/")
 async def main():
@@ -26,7 +30,7 @@ async def js(file_pass):
 #中身を後で実装する所一覧
 @app.route("/available_device",methods=["GET"])
 async def available_device():
-    device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectML":[]}
+    device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectML":[],"Metal":[],"CPU":[]}
     try:
         for i in range(torch.cuda.device_count()):
             device_list["NVIDIA"].append({"name":torch.cuda.get_device_name(i),"id":i})
@@ -50,6 +54,23 @@ async def available_device():
             device_list["DirectML"].append({"name":torch_directml.device_name(i),"id":i})
     except:
         pass
+    #CPU情報に関してはOSコマンドかwindowsAPIを使用しないと取得できないためOSコマンドとwindowsAPIを使って取得する
+    #Apple Silicons CPU,Radeon GPUはMetalに対応しているのでそのデバイスが見つかったらMetalに追加する
+    if "windows" in device_os:
+        try:
+            import wmi
+            for cpu in wmi_client.Win32_Processor():
+                device_list["CPU"].append(cpu.Name)
+        except ImportError:
+            print("Windows Management Instrumentationにアクセスできませんでした、正しく取得するために以下のコマンドをお試しください\npip install pywin32")
+    elif "linux" in device_os:
+        cpu_info=subprocess.check_output("lshw -class processor")
+        cpu_info.split("\n")
+        #辞書型に変えて取得しやすいようにする
+        device_list.append()
+    else:
+        device_info=subprocess.check_output("system_profiler SPHardwareDataType")
+        #これも辞書型に変えて取得しやすいようにする
     return f"{device_list}"
 @app.route("/model_upload",methods=["POST"])
 async def upload():
@@ -61,7 +82,8 @@ async def upload():
     os.rename(os.path.join(app_dir,"model",file.filename),os.path.join(app_dir,"model",file_name))
     return file_pass
 @app.route("/learning",methods=["POST"])
-async def learning():
+async def learning(request_json):
+
     return "Learning"
 if __name__ == "__main__":
     with open("config.yaml",mode="r",encoding="UTF-8")as f:

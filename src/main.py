@@ -8,12 +8,13 @@ import string
 import torch
 import platform
 import subprocess
+import json
 device_os=platform.platform(terse=True)
 os.chdir(os.path.dirname(__file__))
 os.chdir("../")
 app_dir=os.getcwd()
 print(f"アプリディレクトリを{app_dir}に設定しました")
-print(f"起動したOS{platform}")
+print(f"起動したOS{platform.platform(terse=True)}")
 app = Flask(__name__)
 @app.route("/")
 async def main():
@@ -56,18 +57,29 @@ async def available_device():
         pass
     #CPU情報に関してはOSコマンドかwindowsAPIを使用しないと取得できないためOSコマンドとwindowsAPIを使って取得する
     #Apple Silicons CPU,Radeon GPUはMetalに対応しているのでそのデバイスが見つかったらMetalに追加する
-    if "windows" in device_os:
+    if "Windows" in device_os:
         try:
-            import wmi
+            import wmi # type: ignore
+            wmi_client = wmi.WMI()
             for cpu in wmi_client.Win32_Processor():
                 device_list["CPU"].append(cpu.Name)
         except ImportError:
             print("Windows Management Instrumentationにアクセスできませんでした、正しく取得するために以下のコマンドをお試しください\npip install pywin32")
-    elif "linux" in device_os:
-        cpu_info=subprocess.check_output("lshw -class processor")
-        cpu_info.split("\n")
-        #辞書型に変えて取得しやすいようにする
-        device_list.append()
+    elif "Linux" in device_os:
+        return_data={}
+        output=subprocess.check_output("lscpu")
+        output=output.decode("utf-8")
+        datas=output.split("\n")
+        for data in datas:
+            data.replace(" ","")
+            data=data.split(":")
+            try:
+                return_data[data[0].lstrip()]=data[1].lstrip()
+            except IndexError:
+                pass
+        print(return_data)
+        cpu_name=return_data["Model name"]
+        device_list["CPU"].append(cpu_name)
     else:
         device_info=subprocess.check_output("system_profiler SPHardwareDataType")
         #これも辞書型に変えて取得しやすいようにする

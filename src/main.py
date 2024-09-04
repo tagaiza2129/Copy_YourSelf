@@ -1,4 +1,4 @@
-from flask import Flask, render_template,send_from_directory
+from flask import Flask,send_from_directory
 from flask import request as req
 import os
 import yaml
@@ -8,13 +8,25 @@ import string
 import torch
 import platform
 import subprocess
-import json
+import shutil
+import time
 device_os=platform.platform(terse=True)
 os.chdir(os.path.dirname(__file__))
 os.chdir("../")
 app_dir=os.getcwd()
 print(f"アプリディレクトリを{app_dir}に設定しました")
-print(f"起動したOS{platform.platform(terse=True)}")
+print(f"起動したOS:{platform.platform(terse=True)}")
+#動作するかまで確認する予定だけど今はこのままでOK
+print(f"モデルを読み込みます...",end="")
+os.chdir(os.path.join(app_dir,"model"))
+model_list=os.listdir()
+time.sleep(3)
+print("完了")
+print("拡張機能を読み込みます...",end="")
+os.chdir(os.path.join(app_dir,"Extensions"))
+extension_list=os.listdir()
+time.sleep(3)
+print("完了")
 app = Flask(__name__)
 @app.route("/")
 async def main():
@@ -28,7 +40,6 @@ async def img(file_pass):
 @app.route("/js/<string:file_pass>")
 async def js(file_pass):
     return send_from_directory(os.path.join(app_dir,"static/js"),file_pass)
-#中身を後で実装する所一覧
 @app.route("/available_device",methods=["GET"])
 async def available_device():
     device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectML":[],"Metal":[],"CPU":[]}
@@ -81,9 +92,26 @@ async def available_device():
         cpu_name=return_data["Model name"]
         device_list["CPU"].append(cpu_name)
     else:
+        #Macの場合
+        #RADEONのGPU情報も入手したい場合は右のコマンドを引数に追加する SPDisplaysDataType
         device_info=subprocess.check_output("system_profiler SPHardwareDataType")
         #これも辞書型に変えて取得しやすいようにする
+        device_info=device_info.decode("utf-8")
+        device_info=device_info.split("\n")
+        for data in datas:
+            data=data.split(":")
+            try:
+                return_data[data[0].lstrip()]=data[1].lstrip()
+            except IndexError:
+                pass
+        if torch.backends.mps.is_available():
+            #Metalが使用可能な場合RADEONのGPUかApple SiliconsのCPUが使用されている...が面倒なのでApple SilliconのCPUのみMetalに追加する
+            metal_device=return_data["Processor Name"]
+            device_list["Metal"].append(metal_device)
+        cpu_name=return_data["Processor Name"]
+        device_list["CPU"].append(cpu_name)
     return f"{device_list}"
+#Zip化されて届くので回答して保存
 @app.route("/model_upload",methods=["POST"])
 async def upload():
     file_pass=[random.choice(string.ascii_letters + string.digits) for i in range(20)]
@@ -91,11 +119,11 @@ async def upload():
     file=req.files["file"]
     file_name=file.filename
     file.save(os.path.join(app_dir,"model",file.filename))
-    os.rename(os.path.join(app_dir,"model",file.filename),os.path.join(app_dir,"model",file_name))
+    shutil.unpack_archive(file_name,file_pass)
+    os.remove(file_name)
     return file_pass
 @app.route("/learning",methods=["POST"])
 async def learning(request_json):
-
     return "Learning"
 if __name__ == "__main__":
     with open("config.yaml",mode="r",encoding="UTF-8")as f:

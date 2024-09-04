@@ -1,12 +1,5 @@
-log.txt
-Preprocessing/__pycache__
-RNN/__pycache__
-src/Preprocessing/model
-__pycache__
-main
-Learning_File
-model_datas
-chat
+/model/*
+/Extensions/*
 # Added by cargo
 
 /target

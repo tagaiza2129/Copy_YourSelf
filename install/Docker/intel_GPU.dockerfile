@@ -24,7 +24,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf  /var/lib/apt/lists/*
 
-RUN pip install --ignore-installed wget tqdm gensim flask matplotlib
+RUN pip install --ignore-installed wget tqdm gensim flask[async] matplotlib
+
+RUN pip install torch==2.1.0.post3+cxx11.abi torchtext
 
 RUN pip install websockets
 

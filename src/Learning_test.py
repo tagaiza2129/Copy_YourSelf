@@ -1,20 +1,21 @@
-#Rustが書くの面倒になってきたから一旦Pythonで書く
-#PyTorchでのチャットボットの学習コード
-from Preprocessing import token
-from inference import Seq2Seq
+import time
+print("テストモードなので計測を開始します")
+start = time.time()
 import os
-import numpy as np
-import torchtext
-from janome.tokenizer import Tokenizer
-APP_dir =os.path.dirname(os.path.dirname(__file__))
-os.chdir(os.path.join(APP_dir,"Learning_File/Learning_test_model/Lerarning"))
-with open("input.txt","r",encoding="utf-8") as f:
-    inputs=f.readlines()
-with open("output.txt","r",encoding="utf-8") as f:
-    outputs=f.readlines()
-_Tokenizer=Tokenizer()
-def tokenizer(text):
-    return [token for token in _Tokenizer.tokenize(text, wakati=True)]
-for i in range(len(inputs)):
-    inputs[i]=tokenizer(inputs[i])
-    outputs[i]=tokenizer(outputs[i])
+from inference.Seq2Seq import Learning  
+#Intel GPUを使用するために消さないでって言ったじゃん！少し過去の俺！
+import intel_extension_for_pytorch
+batch_size = 32
+APP_dir = os.path.dirname(os.path.dirname(__file__))
+device="xpu"
+os.chdir(os.path.join(APP_dir, "model/Learning_test_model/Lerarning"))
+
+with open("input.txt", "r", encoding="utf-8") as f:
+    inputs = f.readlines()
+with open("output.txt", "r", encoding="utf-8") as f:
+    outputs = f.readlines()
+
+model=Learning(inputs,outputs,device=device,batch_size=batch_size,lr=0.001)
+end=time.time()
+time_diff = end - start
+print(time_diff)

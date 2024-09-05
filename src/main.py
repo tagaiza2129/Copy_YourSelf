@@ -126,6 +126,7 @@ async def upload():
 async def learning(request_json):
     return "Learning"
 if __name__ == "__main__":
+    os.chdir(app_dir)
     with open("config.yaml",mode="r",encoding="UTF-8")as f:
         config = yaml.safe_load(f)
     import argparse

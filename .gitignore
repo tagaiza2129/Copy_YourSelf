@@ -1,5 +1,7 @@
 /model/*
 /Extensions/*
+src/inference/__pycache__
+src/Preprocessing/__pycache__
 # Added by cargo
 
 /target

@@ -20,7 +20,7 @@ $ docker run -ti \
 # INTEL GPUの場合
 インストールコマンド
 ``` sh 
-$ docker build --no-cache -t copy_yourself:lastest -f intel_GPU.dockerfile .
+$ docker build --no-cache -t copy_yourself:lastest --shm-size=256m -f intel_GPU.dockerfile .
 ```
 起動コマンド
 ``` sh

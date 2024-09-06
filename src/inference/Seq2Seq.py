@@ -154,7 +154,7 @@ def evaluate(model, iterator,input_field:list,reply_field:list):
     model.eval()  # 評価モードにできる
 
     batch = next(iter(iterator))
-    x = batch.inp_text
+    x = batch.input_text
     y = model.predict(x)
     for i in range(x.size()[0]):
         inp_text = ""
@@ -171,8 +171,6 @@ def evaluate(model, iterator,input_field:list,reply_field:list):
                 break
             rep_text += word
 
-        print("input:", inp_text)
-        print("reply:", rep_text)
 _Tokenizer = Tokenizer()
 def tokenizer(text):
         return [token for token in _Tokenizer.tokenize(text, wakati=True)]
@@ -276,7 +274,7 @@ def Learning(inputs:list,outputs:list,device="cpu",batch_size=64,lr=0.001,epochs
             print("Epoch:", i, "Loss_Train:", loss_train, "Loss_Test:", loss_test)
             print()
 
-        evaluate(seq2seq, test_iterator)
+        evaluate(model=seq2seq, iterator=test_iterator,input_field=input_field,reply_field=reply_field)
 
     #早期終了の設定をします
         latest_min = min(record_loss_test[-(early_stop_patience):])  # 直近の最小値
@@ -287,3 +285,4 @@ def Learning(inputs:list,outputs:list,device="cpu",batch_size=64,lr=0.001,epochs
             min_loss_test = latest_min
         else:
             min_loss_test = latest_min
+    torch.save(seq2seq.state_dict(), "chat_bot.pth")

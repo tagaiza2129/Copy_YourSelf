@@ -5,11 +5,11 @@ import yaml
 import ssl
 import random
 import string
-import torch
 import platform
 import subprocess
 import shutil
 import time
+import json
 device_os=platform.platform(terse=True)
 os.chdir(os.path.dirname(__file__))
 os.chdir("../")
@@ -42,6 +42,7 @@ async def js(file_pass):
     return send_from_directory(os.path.join(app_dir,"static/js"),file_pass)
 @app.route("/available_device",methods=["GET"])
 async def available_device():
+    import torch # type: ignore
     device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectML":[],"Metal":[],"CPU":[]}
     try:
         for i in range(torch.cuda.device_count()):
@@ -124,6 +125,20 @@ async def upload():
     return file_pass
 @app.route("/learning",methods=["POST"])
 async def learning(request_json):
+    send_data = req.data.decode('utf-8')
+    learning_data = json.loads(send_data)
+    path=learning_data["path"]
+    device=learning_data["device"]
+    batch_size=learning_data["batch_size"]
+    lr=learning_data["lr"]
+    epochs=learning_data["epochs"]
+    match device:
+        case "INTEL_GPU":
+            import intel_extension_for_pytorch # type: ignore
+        case "DirectML":
+            import torch_directml # type: ignore
+            device=torch_directml.device()
+    os.chdir(os.path.join(app_dir,"model",path))
     return "Learning"
 if __name__ == "__main__":
     os.chdir(app_dir)

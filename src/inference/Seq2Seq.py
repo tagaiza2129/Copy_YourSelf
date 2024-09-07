@@ -174,7 +174,7 @@ def evaluate(model, iterator,input_field:list,reply_field:list):
 _Tokenizer = Tokenizer()
 def tokenizer(text):
         return [token for token in _Tokenizer.tokenize(text, wakati=True)]
-def Learning(inputs:list,outputs:list,device="cpu",batch_size=64,lr=0.001,epochs=1000):
+def Learning(inputs:list,outputs:list,device="cpu",batch_size=64,lr=0.001,epochs=1000,path="."):
     global input_field,reply_field,n_h,n_vocab,n_emb
     inputs = [tokenizer(line) for line in inputs if line.strip()]
     outputs = [tokenizer(line) for line in outputs if line.strip()]

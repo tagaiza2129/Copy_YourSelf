@@ -1,14 +1,13 @@
 import time
-print("テストモードなので計測を開始します")
+print("テストモード...計測を開始します")
 start = time.time()
 import os
 from inference.Seq2Seq import Learning  
-#Intel GPUを使用するために消さないでって言ったじゃん！少し過去の俺！
-import intel_extension_for_pytorch
+import torch_directml
 #Batch_sizeは2のn乗でないといけない
 batch_size = 16
 APP_dir = os.path.dirname(os.path.dirname(__file__))
-device="xpu"
+device=torch_directml.device()
 os.chdir(os.path.join(APP_dir, "model/Learning_test_model/Lerarning"))
 
 with open("input.txt", "r", encoding="utf-8") as f:

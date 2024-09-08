@@ -5,11 +5,11 @@ import yaml
 import ssl
 import random
 import string
-import torch
 import platform
 import subprocess
 import shutil
 import time
+import json
 import json
 device_os=platform.platform(terse=True)
 app_dir = os.path.dirname(os.path.dirname(__file__))
@@ -41,6 +41,7 @@ async def js(file_pass):
     return send_from_directory(os.path.join(app_dir,"static/js"),file_pass)
 @app.route("/available_device",methods=["GET"])
 async def available_device():
+    import torch # type: ignore
     device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectML":[],"Metal":[],"CPU":[]}
     try:
         for i in range(torch.cuda.device_count()):
@@ -123,6 +124,7 @@ async def upload():
     return file_pass
 @app.route("/learning",methods=["POST"])
 async def learning():
+    import torch
     data=req.json
     try:
         model_name=data["model_path"]
@@ -158,6 +160,7 @@ async def learning():
     return "Success"
 @app.route("/inference",methods=["POST"])
 async def inference():
+    import torch
     from inference import Seq2Seq
     data=req.json
     try:

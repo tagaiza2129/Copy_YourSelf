@@ -7,27 +7,28 @@ import torchtext
 import dill
 from sklearn.model_selection import train_test_split
 from janome.tokenizer import Tokenizer
+import os
 #必要なグローバル変数の宣言
 input_field:list
 reply_field:list
-n_h:int
+len_neutral:int
 n_vocab:int
-n_emb:int
+len_vector:int
 #対応デバイス(NVIDIA,INTEL,AMD,DirectML,Metal,CPU)
 class Encoder(nn.Module):
-    def __init__(self, n_h, n_vocab, n_emb, num_layers=1, bidirectional=False, dropout=0):
+    def __init__(self, len_neutral, n_vocab, len_vector, num_layers=1, bidirectional=False, dropout=0):
         super().__init__()
-        self.n_h = n_h
+        self.len_neutral = len_neutral
         self.num_layers = num_layers
         self.bidirectional = bidirectional
         self.dropout = dropout
         
-        self.embedding = nn.Embedding(n_vocab, n_emb)
+        self.embedding = nn.Embedding(n_vocab, len_vector)
         self.embedding_dropout = nn.Dropout(self.dropout)
 
         self.gru = nn.GRU(
-            input_size=n_emb,  #入力サイズ
-            hidden_size=n_h,#隠れ層のサイズ（ニューロン数）
+            input_size=len_vector,  #入力サイズ
+            hidden_size=len_neutral,#隠れ層のサイズ（ニューロン数）
             batch_first=True,  #（バッチサイズ、時系列、入力数）
             num_layers=num_layers,
             bidirectional=bidirectional,
@@ -52,7 +53,7 @@ class Encoder(nn.Module):
         y, _ = nn.utils.rnn.pad_packed_sequence(y, batch_first=True)   #テンソルに戻す                  
         if self.bidirectional:
                 #会話データにおける最後の重みが大きくなってしまうため
-            y = y[:, :, :self.n_h] + y[:, :, self.n_h:]#ここでは出力と隠れ層の値は双方向の時間の値を足したものになる。
+            y = y[:, :, :self.len_neutral] + y[:, :, self.len_neutral:]#ここでは出力と隠れ層の値は双方向の時間の値を足したものになる。
             h = h[:self.num_layers] + h[self.num_layers:]
 
         return y,h
@@ -60,25 +61,25 @@ class Encoder(nn.Module):
 #Decoderクラスを作成します
 
 class Decoder(nn.Module):
-    def __init__(self, n_h, n_out, n_vocab, n_emb, num_layers=1, dropout=0):
+    def __init__(self, len_neutral, n_out, n_vocab, len_vector, num_layers=1, dropout=0):
         super().__init__()
 
-        self.n_h = n_h
+        self.len_neutral = len_neutral
         self.n_out = n_out
         self.num_layers = num_layers
         self.dropout = dropout
 
-        self.embedding = nn.Embedding(n_vocab, n_emb)
+        self.embedding = nn.Embedding(n_vocab, len_vector)
         self.embedding_dropout = nn.Dropout(self.dropout)
 
         self.gru = nn.GRU(
-            input_size=n_emb,
-            hidden_size=n_h,
+            input_size=len_vector,
+            hidden_size=len_neutral,
             batch_first=True,
             num_layers=num_layers,
         )
 
-        self.fc = nn.Linear(n_h*2, self.n_out)  #全結合層の導入
+        self.fc = nn.Linear(len_neutral*2, self.n_out)  #全結合層の導入
 
 
 
@@ -174,57 +175,44 @@ def evaluate(model, iterator,input_field:list,reply_field:list):
 _Tokenizer = Tokenizer()
 def tokenizer(text):
         return [token for token in _Tokenizer.tokenize(text, wakati=True)]
-def Learning(inputs:list,outputs:list,device="cpu",batch_size=64,lr=0.001,epochs=1000):
-    global input_field,reply_field,n_h,n_vocab,n_emb
+def Learning(path:str,inputs:list,outputs:list,device:torch.device,batch_size=64,lr=0.001,epochs=1000,len_neutral=800,len_vector=300,early_stop_patience=5,num_layers=1,bidirectional=True,dropout=0.1,clip=100):
+    os.chdir(os.path.join(path))
+    if ".cache" in os.listdir() or "model" in os.listdir():
+        os.mkdir(".cache")
+        os.mkdir("model")
     inputs = [tokenizer(line) for line in inputs if line.strip()]
     outputs = [tokenizer(line) for line in outputs if line.strip()]
-
     dialogues_train, dialogues_test = train_test_split(list(zip(inputs, outputs)), shuffle=True, test_size=0.05)
-
     train_df = pd.DataFrame(dialogues_train, columns=["input_text", "reply_text"])
     test_df = pd.DataFrame(dialogues_test, columns=["input_text", "reply_text"])
-
-    train_df.to_csv("train_data.csv", index=False)
-    test_df.to_csv("test_data.csv", index=False)
-
+    train_df.to_csv(".cache/train_data.csv", index=False)
+    test_df.to_csv(".cache/test_data.csv", index=False)
     input_field = torchtext.data.Field(sequential=True, tokenize=tokenizer, batch_first=True, lower=True)
     reply_field = torchtext.data.Field(sequential=True, tokenize=tokenizer, init_token="<sos>", eos_token="<eos>", batch_first=True, lower=True)
-
-    train_data, test_data = torchtext.data.TabularDataset.splits(path=".",train="train_data.csv",test="test_data.csv",format="csv",fields=[("input_text", input_field), ("reply_text", reply_field)])
+    train_data, test_data = torchtext.data.TabularDataset.splits(path=".",train=".cache/train_data.csv",test=".cache/test_data.csv",format="csv",fields=[("input_text", input_field), ("reply_text", reply_field)])
     input_field.build_vocab(train_data, min_freq=3)
     reply_field.build_vocab(train_data, min_freq=3)
-    torch.save(train_data.examples, "train_examples.pkl", pickle_module=dill)
-    torch.save(test_data.examples, "test_examples.pkl", pickle_module=dill)
-    torch.save(input_field, "input.pkl", pickle_module=dill)
-    torch.save(reply_field, "reply.pkl", pickle_module=dill) 
+    torch.save(train_data.examples, "model/train_examples.pkl", pickle_module=dill)
+    torch.save(test_data.examples, "model/test_examples.pkl", pickle_module=dill)
+    torch.save(input_field, "model/input.pkl", pickle_module=dill)
+    torch.save(reply_field, "model/reply.pkl", pickle_module=dill) 
     train_iterator = torchtext.data.Iterator(train_data,batch_size=batch_size,train=True)
     test_iterator = torchtext.data.Iterator(test_data,batch_size=batch_size,train=False,sort=False)
-    n_h = 800   
     n_vocab_inp = len(input_field.vocab.itos)  #入力文の長さ
     n_vocab_rep = len(reply_field.vocab.itos)  #応答文の長さ
-    n_emb = 300    #埋め込みベクトルの要素数
     n_out = n_vocab_rep     #出力の数
-    early_stop_patience = 5  # 早期終了のタイミング（誤差の最小値が何回更新されなかったら終了か）
-    num_layers = 1        #中間層の数
-    bidirectional = True
-    dropout = 0.1
-    clip = 100 
-    encoder = Encoder(n_h, n_vocab_inp, n_emb, num_layers, bidirectional, dropout=dropout)
-    decoder = Decoder(n_h, n_out, n_vocab_rep, n_emb, num_layers, dropout=dropout)
+    encoder = Encoder(len_neutral, n_vocab_inp, len_vector, num_layers, bidirectional, dropout=dropout)
+    decoder = Decoder(len_neutral, n_out, n_vocab_rep, len_vector, num_layers, dropout=dropout)
     seq2seq = Seq2Seq(encoder, decoder, device=device, input_field=input_field, reply_field=reply_field)
-
     loss_fnc = nn.CrossEntropyLoss(ignore_index=reply_field.vocab.stoi["<pad>"])
-
     optimizer_enc = optim.Adam(seq2seq.parameters(), lr=lr)
     optimizer_dec = optim.Adam(seq2seq.parameters(), lr=lr)
     record_loss_train = []
     record_loss_test = []
     min_losss_test = 0.0
-
     # 学習
     for i in range(epochs):     #1000epoch 学習
         seq2seq.train()
-
         loss_train = 0
         for j, batch in enumerate(train_iterator):
             inp, rep = batch.input_text, batch.reply_text
@@ -276,13 +264,43 @@ def Learning(inputs:list,outputs:list,device="cpu",batch_size=64,lr=0.001,epochs
 
         evaluate(model=seq2seq, iterator=test_iterator,input_field=input_field,reply_field=reply_field)
 
-    #早期終了の設定をします
-        latest_min = min(record_loss_test[-(early_stop_patience):])  # 直近の最小値
+        latest_min = min(record_loss_test[-(early_stop_patience):])
         if len(record_loss_test) >= early_stop_patience:
-            if latest_min > min_loss_test:  # 直近で最小値が更新されていなければ
+            if latest_min > min_loss_test:
                 print("Early stopping!")
                 break
             min_loss_test = latest_min
         else:
             min_loss_test = latest_min
-    torch.save(seq2seq.state_dict(), "chat_bot.pth")
+    torch.save(seq2seq.state_dict(), "model/chat_bot.pth")
+def chat(model_path:str,text:str,max_length,device:torch.device,len_neutral=800,len_vector=300,num_layers=1,bidirectional=True,dropout=0.0,clip=100):
+    os.chdir(os.path.join(model_path))
+    global input_field,reply_field
+    input_field = torch.load("model/input.pkl", pickle_module=dill)
+    reply_field = torch.load("model/reply.pkl", pickle_module=dill)
+    n_vocab_inp = len(input_field.vocab.itos)
+    n_vocab_rep = len(reply_field.vocab.itos)
+    n_out = n_vocab_rep
+    encoder = Encoder(len_neutral, n_vocab_inp, len_vector, num_layers, bidirectional)
+    decoder = Decoder(len_neutral, n_out, n_vocab_rep, len_vector, num_layers, dropout=dropout)
+    seq2seq = Seq2Seq(encoder, decoder, device=device,input_field=input_field, reply_field=reply_field)
+    seq2seq.load_state_dict(torch.load("model/chat_bot.pth", map_location=device))
+    wakati_list =tokenizer(text)
+    word_index = []
+    for word in wakati_list:
+        index = input_field.vocab.stoi[word]
+        word_index.append(index)
+    x = torch.tensor(word_index)
+    x = x.view(1, -1)
+    y = seq2seq.predict(x)
+    reply_text = ""
+    for j in range(y.size()[1]):
+        word = reply_field.vocab.itos[y[0][j]]#インデックスを単語に変換
+        if word=="<eos>":
+            break
+        reply_text += word
+    reply_text = reply_text.replace("<sos>", "")    #不要なものを削除
+    reply_text = reply_text.replace("<eos>", "")
+    reply_text = reply_text.replace("<pad>", "")
+    reply_text = reply_text.replace("<unk>", "")
+    return reply_text

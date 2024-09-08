@@ -10,10 +10,9 @@ import platform
 import subprocess
 import shutil
 import time
+import json
 device_os=platform.platform(terse=True)
-os.chdir(os.path.dirname(__file__))
-os.chdir("../")
-app_dir=os.getcwd()
+app_dir = os.path.dirname(os.path.dirname(__file__))
 print(f"アプリディレクトリを{app_dir}に設定しました")
 print(f"起動したOS:{platform.platform(terse=True)}")
 #動作するかまで確認する予定だけど今はこのままでOK
@@ -123,8 +122,86 @@ async def upload():
     os.remove(file_name)
     return file_pass
 @app.route("/learning",methods=["POST"])
-async def learning(request_json):
-    return "Learning"
+async def learning():
+    data=req.json
+    try:
+        model_name=data["model_path"]
+        lr=data["lr"]
+        epoch=data["epoch"]
+        batch_size=data["batch_size"]
+        device_type=data["device_type"]
+        device_id=data["device_id"]
+    except KeyError:
+        return "必要情報の不足",400
+    match device_type:
+        case "NVIDIA":
+            device=torch.device(f"cuda:{device_id}")
+        case "INTEL":
+            import intel_extension_for_pytorch # type: ignore
+            device=torch.device(f"xpu:{device_id}")
+        case "METAL":
+            device=torch.device(f"mps:{device_id}")
+        case "DirectML":
+            import torch_directml # type: ignore
+            device=torch_directml.device(device_id)
+        case "CPU":
+            device=torch.device(f"cpu:{device_id}")
+        case _:
+            return "デバイスが見つかりませんでした",400
+    from inference.Seq2Seq import Learning 
+    os.chdir(os.path.join(app_dir,"model",model_name))
+    with open("Lerarning/input.txt", "r", encoding="utf-8") as f:
+        inputs = f.readlines()
+    with open("Lerarning/output.txt", "r", encoding="utf-8") as f:
+        outputs = f.readlines()
+    Learning(path=os.path.join(app_dir,"model",model_name), inputs=inputs, outputs=outputs, device=device, batch_size=batch_size, lr=lr, epochs=epoch)
+    return "Success"
+@app.route("/inference",methods=["POST"])
+async def inference():
+    from inference import Seq2Seq
+    data=req.json
+    try:
+        model_name=data["model_path"]
+        text=data["text"]
+        max_length=data["max_length"]
+        device_type=data["device_type"]
+        device_id=data["device_id"]
+        len_neutral=data["len_neutral"]
+        len_vector=data["len_vector"]
+        num_layers=data["num_layers"]
+        bidirectional=data["bidirectional"]
+        dropout=data["dropout"]
+        clip=data["clip"]
+    except KeyError:
+        return "必要情報の不足",400
+    match device_type:
+        case "NVIDIA":
+            device=torch.device(f"cuda:{device_id}")
+        case "INTEL":
+            import intel_extension_for_pytorch # type: ignore
+            device=torch.device(f"xpu:{device_id}")
+        case "METAL":
+            device=torch.device(f"mps:{device_id}")
+        case "DirectML":
+            import torch_directml # type: ignore
+            device=torch_directml.device(device_id)
+        case "CPU":
+            device=torch.device(f"cpu:{device_id}")
+        case _:
+            return "デバイスが見つかりませんでした",400
+    return Seq2Seq.chat(os.path.join(app_dir,"model",model_name),text=text,max_length=max_length,device=device,len_neutral=len_neutral,len_vector=len_vector,num_layers=num_layers,bidirectional=bidirectional,dropout=dropout,clip=clip)
+@app.route("models",methods=["GET"])
+async def models():
+    os.chdir(os.path.join(app_dir,"model"))
+    files=os.listdir()
+    model_names={"name":[],"path":[]}
+    for file in files:
+        os.chdir(os.path.join(app_dir,"model",file))
+        with open("config.json",mode="r",encoding="UTF-8")as f:
+            config = json.load(f)
+        model_names["name"].append(config["model_name"])
+        model_names["path"].append(file)
+    return model_names
 if __name__ == "__main__":
     os.chdir(app_dir)
     with open("config.yaml",mode="r",encoding="UTF-8")as f:

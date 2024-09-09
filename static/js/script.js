@@ -24,6 +24,49 @@ document.addEventListener('DOMContentLoaded', function() {
         fileUploadInput.click();
     });
 
+    document.addEventListener('DOMContentLoaded', function() {
+    // ページの要素を取得
+    const loginPage = document.getElementById('login-page');
+    const settingsPage = document.getElementById('settings-page');
+    const errorPage = document.getElementById('error-page');
+    const loginForm = document.getElementById('login-form');
+    const redirectButton = document.getElementById('redirect-button');
+    const backToMainButton = document.getElementById('back-to-main');
+
+    // 初期画面としてログインページを表示
+    loginPage.style.display = 'flex';
+
+    // ログインフォームの送信イベントを監視
+    loginForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        // ログイン成功時の処理（仮に成功とする）
+        loginPage.style.display = 'none';
+        settingsPage.style.display = 'block';
+    });
+
+    // ユーザー設定ページの戻るボタン
+    backToMainButton.addEventListener('click', function() {
+        settingsPage.style.display = 'none';
+        loginPage.style.display = 'flex';
+    });
+
+    // エラーページのリダイレクトボタン
+    redirectButton.addEventListener('click', function() {
+        window.location.href = '/'; // ホームにリダイレクトする例
+    });
+
+    // エラーページの表示（エラー発生時に呼び出す関数）
+    function showErrorPage() {
+        loginPage.style.display = 'none';
+        settingsPage.style.display = 'none';
+        errorPage.style.display = 'block';
+    }
+
+    // 例：何らかのエラーが発生したとき
+    // showErrorPage();
+});
+
+
     menuToggle.addEventListener('click', function() {
         sideMenu.classList.toggle('active');
         appContainer.classList.toggle('menu-active'); // 追加

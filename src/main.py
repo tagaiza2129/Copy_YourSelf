@@ -194,9 +194,11 @@ async def inference():
             device=torch.device(f"cpu:{device_id}")
         case _:
             return "デバイスが見つかりませんでした",400
-    return Seq2Seq.chat(os.path.join(app_dir,"model",model_name),text=text,max_length=max_length,device=device,len_neutral=len_neutral,len_vector=len_vector,num_layers=num_layers,bidirectional=bidirectional,dropout=dropout,clip=clip)
+    message=Seq2Seq.chat(os.path.join(app_dir,"model",model_name),text=text,max_length=max_length,device=device,len_neutral=len_neutral,len_vector=len_vector,num_layers=num_layers,bidirectional=bidirectional,dropout=dropout,clip=clip)
+    return {"message":message} 
 @app.route("/models",methods=["GET"])
 async def models():
+    return_data={}
     os.chdir(os.path.join(app_dir,"model"))
     files=os.listdir()
     model_names={"name":[],"path":[]}

@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const title = document.getElementById('title');
     const menuToggle = document.getElementById('menu-toggle');
     const sideMenu = document.getElementById('side-menu');
     const profileToggle = document.getElementById('profile-toggle');
@@ -82,6 +83,34 @@ document.addEventListener('DOMContentLoaded', function() {
             messagesContainer.appendChild(messageElement);
             messageInput.value = "";
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            fetch("inference", {
+                method: 'POST',
+                body: JSON.stringify({
+                    message: messageText,
+                    max_length: 10,
+                    device_type: "NVIDIA",
+                    device_id: 0,
+                    len_nutral: 800,
+                    len_vector: 300,
+                    num_layers: 1,
+                    bidirectional: true,
+                    dropout: "0.0",
+                    clip: 100
+                }),
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('AI:', data.map(item => item.message));
+                const resultElement = document.createElement('div');
+                resultElement.textContent = 'AI: ' + data;
+                messagesContainer.appendChild(resultElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('AI:', error);
+                alert('AI processing failed.');
+            });
         }
     }
 
@@ -168,5 +197,32 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('ファイル送信に失敗しました:', error);
             alert('ファイル送信に失敗しました。');
         });
+    });
+
+    function fetchChatList() {
+        fetch('/models', { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const names = data.map(item => item.name);
+                const paths = data.map(item => item.path);
+                return names,paths;
+            })
+            .catch(error => {
+                console.error('モデルのリストの取得に失敗しました:', error);
+            });
+    }
+    const chatList = document.querySelector('.chat-list');
+
+    function addChatItem(text) {
+        const chatItem = document.createElement('li');
+        chatItem.textContent = text;
+        chatList.appendChild(chatItem);
+    }
+
+    fetchChatList().then(names,paths => {
+        for (let i = 0; i < names.length; i++) {
+            addChatItem(data[i]);
+        }
     });
 });

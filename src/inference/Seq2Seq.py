@@ -170,7 +170,7 @@ def evaluate(model, iterator,input_field:list,reply_field:list):
             word = reply_field.vocab.itos[y[i][j]]
             if word=="<eos>":
                 break
-            rep_text += word
+            rep_text += word 
 
 _Tokenizer = Tokenizer()
 def tokenizer(text):
@@ -190,7 +190,7 @@ def Learning(path:str,inputs:list,outputs:list,device:torch.device,batch_size=64
     train_df.to_csv(".cache/train_data.csv", index=False)
     test_df.to_csv(".cache/test_data.csv", index=False)
     input_field = torchtext.data.Field(sequential=True, tokenize=tokenizer, batch_first=True, lower=True)
-    reply_field = torchtext.data.Field(sequential=True, tokenize=tokenizer, init_token="<sos>", eos_token="<eos>", batch_first=True, lower=True)
+    reply_field = torchtext.data.Field(sequential=True, tokenize=tokenizer,batch_first=True, lower=True)
     train_data, test_data = torchtext.data.TabularDataset.splits(path=".",train=".cache/train_data.csv",test=".cache/test_data.csv",format="csv",fields=[("input_text", input_field), ("reply_text", reply_field)])
     input_field.build_vocab(train_data, min_freq=3)
     reply_field.build_vocab(train_data, min_freq=3)
@@ -275,7 +275,7 @@ def Learning(path:str,inputs:list,outputs:list,device:torch.device,batch_size=64
         else:
             min_loss_test = latest_min
     torch.save(seq2seq.state_dict(), "model/chat_bot.pth")
-def chat(app_path:str,model_path:str,text:str,max_length,device:torch.device,len_neutral=800,len_vector=300,num_layers=1,bidirectional=True,dropout=0.0,clip=100):
+def chat(model_path:str,text:str,max_length,device:torch.device,len_neutral=800,len_vector=300,num_layers=1,bidirectional=True,dropout=0.0,clip=100):
     os.chdir(os.path.join(model_path))
     global input_field,reply_field
     input_field = torch.load("model/input.pkl", pickle_module=dill)

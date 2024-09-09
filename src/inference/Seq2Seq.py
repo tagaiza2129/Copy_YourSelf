@@ -176,9 +176,11 @@ _Tokenizer = Tokenizer()
 def tokenizer(text):
         return [token for token in _Tokenizer.tokenize(text, wakati=True)]
 def Learning(path:str,inputs:list,outputs:list,device:torch.device,batch_size=64,lr=0.001,epochs=1000,len_neutral=800,len_vector=300,early_stop_patience=5,num_layers=1,bidirectional=True,dropout=0.1,clip=100):
-    os.chdir(os.path.join(path))
-    if ".cache" in os.listdir() or "model" in os.listdir():
+    global input_field,reply_field
+    os.chdir(path)
+    if ".cache" not in os.listdir():
         os.mkdir(".cache")
+    if "model" not in os.listdir():
         os.mkdir("model")
     inputs = [tokenizer(line) for line in inputs if line.strip()]
     outputs = [tokenizer(line) for line in outputs if line.strip()]
@@ -273,7 +275,7 @@ def Learning(path:str,inputs:list,outputs:list,device:torch.device,batch_size=64
         else:
             min_loss_test = latest_min
     torch.save(seq2seq.state_dict(), "model/chat_bot.pth")
-def chat(model_path:str,text:str,max_length,device:torch.device,len_neutral=800,len_vector=300,num_layers=1,bidirectional=True,dropout=0.0,clip=100):
+def chat(app_path:str,model_path:str,text:str,max_length,device:torch.device,len_neutral=800,len_vector=300,num_layers=1,bidirectional=True,dropout=0.0,clip=100):
     os.chdir(os.path.join(model_path))
     global input_field,reply_field
     input_field = torch.load("model/input.pkl", pickle_module=dill)

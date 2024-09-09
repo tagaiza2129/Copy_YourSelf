@@ -42,6 +42,7 @@ async def js(file_pass):
 @app.route("/available_device",methods=["GET"])
 async def available_device():
     import torch # type: ignore
+    return_data = {}
     device_list={"NVIDIA":[],"INTEL":[],"AMD":[],"DirectML":[],"Metal":[],"CPU":[]}
     try:
         for i in range(torch.cuda.device_count()):
@@ -94,11 +95,11 @@ async def available_device():
     else:
         #Macの場合
         #RADEONのGPU情報も入手したい場合は右のコマンドを引数に追加する SPDisplaysDataType
-        device_info=subprocess.check_output("system_profiler SPHardwareDataType")
+        device_info=subprocess.check_output("system_profiler SPHardwareDataType",shell=True)
         #これも辞書型に変えて取得しやすいようにする
         device_info=device_info.decode("utf-8")
         device_info=device_info.split("\n")
-        for data in datas:
+        for data in device_info:
             data=data.split(":")
             try:
                 return_data[data[0].lstrip()]=data[1].lstrip()
@@ -106,9 +107,10 @@ async def available_device():
                 pass
         if torch.backends.mps.is_available():
             #Metalが使用可能な場合RADEONのGPUかApple SiliconsのCPUが使用されている...が面倒なのでApple SilliconのCPUのみMetalに追加する
-            metal_device=return_data["Processor Name"]
-            device_list["Metal"].append(metal_device)
-        cpu_name=return_data["Processor Name"]
+            metal_device=return_data["Chip"]
+            if "Apple" in metal_device:
+                device_list["Metal"].append(metal_device)
+        cpu_name=return_data["Chip"]
         device_list["CPU"].append(cpu_name)
     return f"{device_list}"
 #Zip化されて届くので回答して保存
@@ -156,7 +158,7 @@ async def learning():
         inputs = f.readlines()
     with open("Lerarning/output.txt", "r", encoding="utf-8") as f:
         outputs = f.readlines()
-    Learning(path=os.path.join(app_dir,"model",model_name), inputs=inputs, outputs=outputs, device=device, batch_size=batch_size, lr=lr, epochs=epoch)
+    Learning(path=os.path.join(app_dir,"model",model_name), inputs=inputs, outputs=outputs, device=device, batch_size=int(batch_size), lr=float(lr), epochs=int(epoch))
     return "Success"
 @app.route("/inference",methods=["POST"])
 async def inference():
@@ -193,7 +195,7 @@ async def inference():
         case _:
             return "デバイスが見つかりませんでした",400
     return Seq2Seq.chat(os.path.join(app_dir,"model",model_name),text=text,max_length=max_length,device=device,len_neutral=len_neutral,len_vector=len_vector,num_layers=num_layers,bidirectional=bidirectional,dropout=dropout,clip=clip)
-@app.route("models",methods=["GET"])
+@app.route("/models",methods=["GET"])
 async def models():
     os.chdir(os.path.join(app_dir,"model"))
     files=os.listdir()

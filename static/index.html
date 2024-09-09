@@ -9,6 +9,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- ログインページ -->
+<div id="login-page" class="page">
+    <header>
+        <h1>Copy_YourSelf</h1>
+    </header>
+    <main>
+        <form id="login-form">
+            <label for="username">ユーザー名</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">パスワード</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">ログイン</button>
+        </form>
+    </main>
+</div>
+
+<!-- ユーザー設定ページ -->
+<div id="settings-page" class="page hidden">
+    <header>
+        <button id="back-to-main"><i class="fas fa-arrow-left"></i></button>
+        <h1>ユーザー設定</h1>
+    </header>
+    <main>
+        <section>
+            <h2>プロフィール設定</h2>
+            <label for="profile-name">名前:</label>
+            <input type="text" id="profile-name" value="全正恩">
+            <button id="save-profile">保存</button>
+        </section>
+    </main>
+</div>
+
+<!-- エラーページ -->
+<div id="error-page" class="page hidden">
+    <header>
+        <h1>エラー</h1>
+    </header>
+    <main>
+        <h2>404 NOT FOUND</h2>
+        <div class="error-icon">
+            <i class="fas fa-trash-alt"></i>
+        </div>
+        <button id="redirect-button">リダイレクト中...</button>
+    </main>
+</div>
+
     <div class="app-container">
         <header>
             <button id="menu-toggle"><i class="fas fa-bars"></i></button>

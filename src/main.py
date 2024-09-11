@@ -209,7 +209,7 @@ async def models():
         model_names["name"].append(config["model_name"])
         model_names["path"].append(file)
     return model_names
-if __name__ == "__main__":
+def start():
     os.chdir(app_dir)
     with open("config.yaml",mode="r",encoding="UTF-8")as f:
         config = yaml.safe_load(f)
@@ -226,3 +226,6 @@ if __name__ == "__main__":
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.load_cert_chain(args.cert, args.public_key)
         app.run(host=args.address,port=args.port,ssl_context=context,debug=False)
+
+if __name__ == "__main__":
+    start()

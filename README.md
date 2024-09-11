@@ -2,14 +2,14 @@
 <img src="https://img.shields.io/badge/Version-0.0.0-G"> <img src="https://img.shields.io/badge/Python_3.9-support-green"> <img src="https://img.shields.io/badge/Python_3.10-support-green"> <img src="https://img.shields.io/badge/Python_3.11-support-green"> \
 ## Copy_YourSelfとは
 
-Googleが提供している機械学習のためのモジュールであるTensorflowを活用し\
-RNN等の手法で自然言語処理を行いユーザーの性格を模したChatAIを作るプロジェクトです
+Googleが提供している機械学習のためのモジュールであるPyTorch等を活用し\
+Seq2Seq等の手法で自然言語処理を行いユーザーの性格を模したChatAIを作るプロジェクトです
 > [!NOTE]  
 　このプロジェクトは現在制作中です。温かい目で御覧ください
 ## 使い方(How to Use)
-### 学習
+### 起動方法
 ```sh
-$ python3 main.py 学習させるデータ -m Learning
+$ Copy_YourSelf
 ```
 学習させる場合は上記のコマンドで学習させることができます
 ### 推論

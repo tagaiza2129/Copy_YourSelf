@@ -6,7 +6,7 @@ src/Copy_YourSelf.egg-info/*
 src/build/bdist.win-amd64/*
 Copy_YourSelf.egg-info/*
 build/bdist.win-amd64/*
-src\__pycache__
+src/__pycache__
 # Added by cargo
 
 /target

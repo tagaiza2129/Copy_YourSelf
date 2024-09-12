@@ -10,22 +10,36 @@ import subprocess
 import shutil
 import time
 import json
-import json
+import warnings
+from Error.General_Error import ExtensionsNotFoundError
 device_os=platform.platform(terse=True)
 app_dir = os.path.dirname(os.path.dirname(__file__))
 print(f"アプリディレクトリを{app_dir}に設定しました")
 print(f"起動したOS:{platform.platform(terse=True)}")
 #動作するかまで確認する予定だけど今はこのままでOK
-print(f"モデルを読み込みます...",end="")
-os.chdir(os.path.join(app_dir,"model"))
-model_list=os.listdir()
-time.sleep(3)
-print("完了")
-print("拡張機能を読み込みます...",end="")
-os.chdir(os.path.join(app_dir,"Extensions"))
-extension_list=os.listdir()
-time.sleep(3)
-print("完了")
+print("設定の読み込みを開始します")
+os.chdir(app_dir)
+if "model" not in os.listdir() or "Extensions" not in os.listdir():
+    os.mkdir("model")
+    os.mkdir("Extensions")
+else:
+    Extensions_datas=os.listdir(os.path.join(app_dir,"Extensions"))
+    Extensions_names=[]
+    for E_data in Extensions_datas:
+        with open(file=os.path.join(app_dir,"Extensions",E_data,"config.json"))as f:
+            Extension_data=json.loads(f.read())
+        if Extension_data["Extension name"] in Extensions_names:
+            Duplication_index=Extensions_names.index(Extension_data["Extension name"])
+            warnings.warn(f"拡張機能が重複しています！ 問題の箇所{Extensions_datas[Duplication_index]},{E_data}")
+        else:
+            Extensions_names.append(Extension_data["Extension name"])
+    model_datas=os.listdir(os.path.join(app_dir,"model"))
+    #とりあえず要求されている拡張機能があるかを確認する
+    for m_data in model_datas:
+        with open(os.path.join(app_dir,"model",m_data,"config.json"),mode="r",encoding="UTF-8")as f:
+            model_data=json.loads(f.read())
+        m_Extensions=model_data["Extensions"]
+    raise ExtensionsNotFoundError("あれ")
 app = Flask(__name__)
 @app.route("/")
 async def main():
@@ -214,7 +228,8 @@ def start():
     with open("config.yaml",mode="r",encoding="UTF-8")as f:
         config = yaml.safe_load(f)
     import argparse
-    parser = argparse.ArgumentParser(prog="Copy_YourSelf-Client",description='AIツール、CopyYourSelfのクライアント側のツール',usage="python3 main.py <file_Path> <options>",add_help=True)
+    parser = argparse.ArgumentParser(prog="Copy_YourSelf",description='Pytorchを用いた拡張式のAI',usage="Copy_YourSelf <mode>",add_help=True)
+    parser.add_argument("mode",type=str,choices=["server","client","model"],default="server")
     parser.add_argument("-a","--address",type=str,help="学習、又は推論に利用するデータを指定します。",default=config["server_ip"])
     parser.add_argument("-p","--port",type=int,help="分散学習に利用するサーバーのポートを指定します",default=config["server_port"])
     parser.add_argument("-k","--public_key",type=str,help="公開鍵を指定します",default=config["public_key_path"])

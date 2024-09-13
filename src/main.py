@@ -39,7 +39,7 @@ else:
         with open(os.path.join(app_dir,"model",m_data,"config.json"),mode="r",encoding="UTF-8")as f:
             model_data=json.loads(f.read())
         m_Extensions=model_data["Extensions"]
-    raise ExtensionsNotFoundError("あれ")
+print("設定の読み込みが完了しました")
 app = Flask(__name__)
 @app.route("/")
 async def main():
@@ -229,12 +229,28 @@ def start():
         config = yaml.safe_load(f)
     import argparse
     parser = argparse.ArgumentParser(prog="Copy_YourSelf",description='Pytorchを用いた拡張式のAI',usage="Copy_YourSelf <mode>",add_help=True)
-    parser.add_argument("mode",type=str,choices=["server","client","model"],default="server")
+    parser.add_argument("-m","--mode",type=str,choices=["server","client","model"],default="server")
     parser.add_argument("-a","--address",type=str,help="学習、又は推論に利用するデータを指定します。",default=config["server_ip"])
     parser.add_argument("-p","--port",type=int,help="分散学習に利用するサーバーのポートを指定します",default=config["server_port"])
     parser.add_argument("-k","--public_key",type=str,help="公開鍵を指定します",default=config["public_key_path"])
     parser.add_argument("-c","--cert",type=str,help="証明書を指定します",default=config["cert_path"])
+    parser.add_argument("-d","--database_ip",type=str,help="データベースのIPアドレスを指定します",default=config["database"]["host"])
+    parser.add_argument("-dp","--database_port",type=int,help="データベースのポートを指定します",default=config["database"]["port"])
+    parser.add_argument("-u","--user",type=str,help="データベースのユーザー名を指定します",default=config["database"]["user"])
+    parser.add_argument("-pa","--password",type=str,help="データベースのパスワードを指定します",default=config["database"]["password"])
     args = parser.parse_args()
+    #MySQLに接続できるか確認する
+    import mysql.connector
+    try:
+        mysql.connector.connect(host=args.database_ip,port=args.database_port,user=args.user,password=args.password)
+    except mysql.connector.errors.DatabaseError:
+        try:
+            from tkinter import messagebox
+            messagebox.showerror("Connect Error","データベースに接続できませんでした")
+            exit()
+        except ImportError:
+            print("データベースに接続できませんでした")
+            exit()
     if args.public_key =="No" or args.cert=="No":
         app.run(host=args.address,port=args.port,debug=False)    
     else:

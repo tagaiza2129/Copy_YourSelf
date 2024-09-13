@@ -14,7 +14,7 @@ setup(
     author="tagaiza2129",
     packages=find_packages(where=os.path.join(dir,"src")),
     package_dir={"": "src"},
-    install_requires=["torch==2.4.0", "transformers", "pydantic", "requests", "pyyaml", "torchtext==0.6.0","dill","scikit-learn","pandas","janome","flask[async]"],
+    install_requires=["torch==2.4.0", "transformers", "pydantic", "requests", "pyyaml", "torchtext==0.6.0","dill","scikit-learn","pandas","janome","flask[async]","mysql-connector-python"],
     entry_points={
         "console_scripts": [
             "Copy_YourSelf=main:start",

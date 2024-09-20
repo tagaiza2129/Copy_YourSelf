@@ -5,7 +5,7 @@ database:
   host: "localhost"
   port: 3306
   user: "root"
-  password: ""
+  password: "test_password"
 defalt_device: "CPU"
 #公開鍵に使うパスを指定、ない場合はNoにしておく
 public_key_path: "No"

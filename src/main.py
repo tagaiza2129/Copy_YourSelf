@@ -11,7 +11,7 @@ import shutil
 import time
 import json
 import warnings
-from Error.General_Error import ExtensionsNotFoundError
+app = Flask(__name__)
 device_os=platform.platform(terse=True)
 app_dir = os.path.dirname(os.path.dirname(__file__))
 print(f"アプリディレクトリを{app_dir}に設定しました")
@@ -39,8 +39,8 @@ else:
         with open(os.path.join(app_dir,"model",m_data,"config.json"),mode="r",encoding="UTF-8")as f:
             model_data=json.loads(f.read())
         m_Extensions=model_data["Extensions"]
+    time.sleep(1)
 print("設定の読み込みが完了しました")
-app = Flask(__name__)
 @app.route("/")
 async def main():
     return send_from_directory(os.path.join(app_dir,"static"),"index.html")
@@ -89,8 +89,8 @@ async def available_device():
             wmi_client = wmi.WMI()
             for cpu in wmi_client.Win32_Processor():
                 device_list["CPU"].append(cpu.Name)
-        except ImportError:
-            print("Windows Management Instrumentationにアクセスできませんでした、正しく取得するために以下のコマンドをお試しください\npip install pywin32")
+        except ImportError as e:
+            print("Windows Management Instrumentationにアクセスできませんでした、正しく取得するために以下のコマンドをお試しください\npip install pywin32\npip install wmi")
     elif "Linux" in device_os:
         return_data={}
         output=subprocess.check_output("lscpu")
@@ -142,6 +142,8 @@ async def upload():
 async def learning():
     import torch
     data=req.json
+    print(data)
+    #request.form["パラメータ名"]
     try:
         model_name=data["model_path"]
         lr=data["lr"]
@@ -241,22 +243,38 @@ def start():
     args = parser.parse_args()
     #MySQLに接続できるか確認する
     import mysql.connector
+    print("データベースに接続を試みます")
     try:
-        mysql.connector.connect(host=args.database_ip,port=args.database_port,user=args.user,password=args.password)
+        conn=mysql.connector.connect(host=args.database_ip,port=args.database_port,user=args.user,password=args.password)
+        cursor=conn.cursor()
+        cursor.execute("SHOW DATABASES;")
+        databases = cursor.fetchall()
+        database_names=[i[0] for i in databases]
+        if "Copy_YourSelf" not in database_names:
+            cursor.execute("CREATE DATABASE Copy_YourSelf;")
+            cursor.execute("USE Copy_YourSelf;")
+            cursor.execute("CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT, user_name VARCHAR(255), password VARCHAR(255), use_device VARCHAR(255));")
+        else:
+            cursor.execute("USE Copy_YourSelf;")
+            cursor.execute("SELECT user_name FROM users;")
+            users=cursor.fetchall()
+            user_names=[i[0] for i in users]
+            print("登録したユーザー数:",len(user_names))
     except mysql.connector.errors.DatabaseError:
-        try:
-            from tkinter import messagebox
-            messagebox.showerror("Connect Error","データベースに接続できませんでした")
-            exit()
-        except ImportError:
-            print("データベースに接続できませんでした")
-            exit()
+            try:
+                from tkinter import messagebox
+                import webbrowser
+                messagebox.showerror("Connect Error","データベースに接続できませんでした\nMySQLをインストールしてからもう一度お試しください")
+                webbrowser.open("https://www.mysql.com/jp/downloads/")
+                exit()
+            except ImportError :
+                print("データベースに接続できませんでした")
+                exit()
     if args.public_key =="No" or args.cert=="No":
         app.run(host=args.address,port=args.port,debug=False)    
     else:
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.load_cert_chain(args.cert, args.public_key)
         app.run(host=args.address,port=args.port,ssl_context=context,debug=False)
-
 if __name__ == "__main__":
     start()

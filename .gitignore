@@ -7,6 +7,7 @@ src/build/bdist.win-amd64/*
 Copy_YourSelf.egg-info/*
 build/bdist.win-amd64/*
 src/__pycache__
+Output
 # Added by cargo
 
 /target

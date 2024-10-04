@@ -1,4 +1,6 @@
 # Copy_YourSelf
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftagaiza2129%2FCopy_YourSelf.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftagaiza2129%2FCopy_YourSelf?ref=badge_shield)
+
 <img src="https://img.shields.io/badge/Version-0.0.0-G"> <img src="https://img.shields.io/badge/Python_3.9-support-green"> <img src="https://img.shields.io/badge/Python_3.10-support-green"> <img src="https://img.shields.io/badge/Python_3.11-support-green"> \
 ## Copy_YourSelfとは
 
@@ -114,3 +116,7 @@ tagaiza2129
 [JParaCrawl](https://www.kecl.ntt.co.jp/icl/lirg/jparacrawl/release/en/3.0/pretrained_models/en-ja/big.tar.gz)
 ## 使用技術,言語等
 <img src="https://img.shields.io/badge/-Python-555.svg?logo=python&style=flat"> <img src="https://img.shields.io/badge/-Github-555.svg?logo=Github&style=flat"> <img src="https://img.shields.io/badge/-Docker-555.svg?logo=Docker&style=flat"> <img src="https://img.shields.io/badge/-tensorflow-555.svg?logo=tensorflow&style=flat">
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftagaiza2129%2FCopy_YourSelf.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftagaiza2129%2FCopy_YourSelf?ref=badge_large)
